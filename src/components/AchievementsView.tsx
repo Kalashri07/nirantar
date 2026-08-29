@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Award,
   Lock,
@@ -8,11 +8,18 @@ import {
   Terminal,
   ShieldCheck,
   Telescope,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { BadgeItem } from '../types';
+import { DigitalBadgeModal } from './DigitalBadgeModal';
 
 export const AchievementsView: React.FC = () => {
-  const { badges, language, t, userProfile } = useApp();
+  const { badges, language, t, userProfile, triggerCelebration } = useApp();
+  const [selectedBadge, setSelectedBadge] = useState<BadgeItem | null>(null);
+  const [newlyUnlockedBadge, setNewlyUnlockedBadge] = useState<BadgeItem | null>(null);
 
   const getBadgeIcon = (iconName: string) => {
     switch (iconName) {
@@ -38,6 +45,43 @@ export const AchievementsView: React.FC = () => {
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-2">
+      {/* Newly Unlocked Toast / Banner if active */}
+      {newlyUnlockedBadge && (
+        <div className="bg-[#FAF6EF] border-2 border-[#102A43] p-4 rounded-2xl shadow-md flex items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#E9DDCB] text-[#102A43] flex items-center justify-center font-bold">
+              🎉
+            </div>
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#675E54] block">
+                ACHIEVEMENT UNLOCKED!
+              </span>
+              <h3 className="text-sm font-bold text-[#102A43]">
+                {newlyUnlockedBadge.title[language]} · +{newlyUnlockedBadge.xpReward} XP
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setSelectedBadge(newlyUnlockedBadge);
+                setNewlyUnlockedBadge(null);
+              }}
+              className="px-3.5 py-1.5 bg-[#102A43] hover:bg-[#0C1F33] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors"
+            >
+              {t.achievements.viewBadge}
+            </button>
+            <button
+              onClick={() => setNewlyUnlockedBadge(null)}
+              className="text-xs text-[#675E54] hover:text-[#102A43] p-1"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -56,7 +100,7 @@ export const AchievementsView: React.FC = () => {
               {unlockedBadges.length} of {badges.length} Unlocked
             </span>
             <span className="text-[10px] text-[#675E54] font-medium">
-              Total Points: {userProfile.currentXp} XP
+              Total Points: {userProfile.currentXp.toLocaleString()} XP
             </span>
           </div>
         </div>
@@ -72,7 +116,7 @@ export const AchievementsView: React.FC = () => {
             return (
               <div
                 key={badge.id}
-                className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs flex flex-col justify-between"
+                className="bg-[#FAF6EF] border border-[#D8CABA] hover:border-[#C9B69C] hover:bg-[#EFE5D5] rounded-2xl p-5 shadow-2xs flex flex-col justify-between transition-all space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
@@ -88,15 +132,24 @@ export const AchievementsView: React.FC = () => {
                     <h3 className="text-sm font-bold text-[#102A43]">
                       {badge.title[language]}
                     </h3>
-                    <p className="text-xs text-[#675E54] mt-1 leading-relaxed">
+                    <p className="text-xs text-[#675E54] mt-1 leading-relaxed line-clamp-2">
                       {badge.description[language]}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3 border-t border-[#D8CABA] flex items-center justify-between text-[11px] text-[#675E54]">
-                  <span>{badge.category}</span>
-                  <span>{badge.unlockedAt || 'Earned'}</span>
+                <div className="pt-3 border-t border-[#D8CABA] flex items-center justify-between text-[11px] text-[#675E54]">
+                  <div className="font-mono font-semibold text-[#102A43]">
+                    +{badge.xpReward} XP
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedBadge(badge)}
+                    className="px-3 py-1.5 bg-[#102A43] hover:bg-[#0C1F33] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>{t.achievements.viewBadge}</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             );
@@ -114,7 +167,7 @@ export const AchievementsView: React.FC = () => {
             return (
               <div
                 key={badge.id}
-                className="bg-[#E9DDCB]/70 border border-[#D8CABA] rounded-2xl p-5 flex flex-col justify-between opacity-80"
+                className="bg-[#E9DDCB]/70 border border-[#D8CABA] rounded-2xl p-5 flex flex-col justify-between opacity-80 space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
@@ -137,14 +190,21 @@ export const AchievementsView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3 border-t border-[#D8CABA] text-[11px] text-[#675E54]">
+                <div className="pt-3 border-t border-[#D8CABA] flex items-center justify-between text-[11px] text-[#675E54]">
                   <span>{badge.category}</span>
+                  <span className="font-mono font-semibold">+{badge.xpReward} XP</span>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* 3. Digital Badge Detail & Print/Export Modal */}
+      <DigitalBadgeModal
+        badge={selectedBadge}
+        onClose={() => setSelectedBadge(null)}
+      />
     </div>
   );
 };

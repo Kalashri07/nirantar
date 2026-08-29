@@ -914,6 +914,7 @@ export const mockMissions: MissionItem[] = [
 export const mockBadges: BadgeItem[] = [
   {
     id: "b-science-explorer",
+    badgeCode: "NIR-SCI-001",
     title: {
       en: "Science Explorer",
       mr: "विज्ञान संशोधक (Science Explorer)",
@@ -927,11 +928,13 @@ export const mockBadges: BadgeItem[] = [
     icon: "Telescope",
     category: "Science",
     isUnlocked: true,
-    unlockedAt: "Yesterday",
-    rarity: "Rare"
+    unlockedAt: "Today",
+    rarity: "Rare",
+    xpReward: 100,
   },
   {
     id: "b-cyber-guardian",
+    badgeCode: "NIR-SEC-002",
     title: {
       en: "Cyber Guardian",
       mr: "सायबर रक्षक (Cyber Guardian)",
@@ -945,10 +948,12 @@ export const mockBadges: BadgeItem[] = [
     icon: "ShieldCheck",
     category: "Cybersecurity",
     isUnlocked: false,
-    rarity: "Epic"
+    rarity: "Epic",
+    xpReward: 150,
   },
   {
     id: "b-code-breaker",
+    badgeCode: "NIR-COD-003",
     title: {
       en: "Code Breaker",
       mr: "कोड ब्रेकर (Code Breaker)",
@@ -962,10 +967,12 @@ export const mockBadges: BadgeItem[] = [
     icon: "Terminal",
     category: "Tech",
     isUnlocked: false,
-    rarity: "Epic"
+    rarity: "Epic",
+    xpReward: 120,
   },
   {
     id: "b-7day-streak",
+    badgeCode: "NIR-STR-007",
     title: {
       en: "7-Day Streak",
       mr: "७ दिवसांची मालिका (7-Day Streak)",
@@ -980,10 +987,12 @@ export const mockBadges: BadgeItem[] = [
     category: "Habit",
     isUnlocked: true,
     unlockedAt: "Today",
-    rarity: "Common"
+    rarity: "Common",
+    xpReward: 75,
   },
   {
     id: "b-offline-champion",
+    badgeCode: "NIR-OFF-042",
     title: {
       en: "Offline Champion",
       mr: "ऑफलाइन चॅम्पियन (Offline Champion)",
@@ -998,10 +1007,12 @@ export const mockBadges: BadgeItem[] = [
     category: "Offline",
     isUnlocked: true,
     unlockedAt: "3 days ago",
-    rarity: "Legendary"
+    rarity: "Legendary",
+    xpReward: 150,
   },
   {
     id: "b-low-data-learner",
+    badgeCode: "NIR-DAT-300",
     title: {
       en: "Low Data Learner",
       mr: "डेटा सेव्हर विद्वान (Low Data Learner)",
@@ -1009,13 +1020,14 @@ export const mockBadges: BadgeItem[] = [
     },
     description: {
       en: "Saved more than 300 MB of mobile cellular data while studying.",
-      mr: "अभ्यास करताना ३०० MB पेक्षा जास्त मोबाइल डेटा वाचवला.",
+      mr: "अभ्यास करताना ३०० MB पेक्षा जास्त mobile डेटा वाचवला.",
       hi: "पढ़ाई के दौरान 300 MB से अधिक मोबाइल डेटा बचाया।"
     },
     icon: "Zap",
     category: "Efficiency",
     isUnlocked: true,
     unlockedAt: "This week",
-    rarity: "Rare"
+    rarity: "Rare",
+    xpReward: 100,
   }
 ];

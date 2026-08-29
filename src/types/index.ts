@@ -145,6 +145,7 @@ export interface MissionItem {
 
 export interface BadgeItem {
   id: string;
+  badgeCode: string;
   title: { en: string; mr: string; hi: string };
   description: { en: string; mr: string; hi: string };
   icon: string;
@@ -152,6 +153,7 @@ export interface BadgeItem {
   isUnlocked: boolean;
   unlockedAt?: string;
   rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
+  xpReward: number;
 }
 
 export interface DataUsageStats {

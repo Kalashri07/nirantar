@@ -117,6 +117,15 @@ export interface Translations {
     streakBadges: string;
     unlocked: string;
     locked: string;
+    viewBadge: string;
+    awardedTo: string;
+    earnedOn: string;
+    reward: string;
+    badgeIdLabel: string;
+    verifiedStatus: string;
+    printBadge: string;
+    downloadBadge: string;
+    badgeSavedOffline: string;
   };
   profile: {
     title: string;
@@ -284,6 +293,15 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       streakBadges: "Streak & Dedication",
       unlocked: "Unlocked",
       locked: "In Progress",
+      viewBadge: "View Badge",
+      awardedTo: "Awarded to",
+      earnedOn: "Earned",
+      reward: "Reward",
+      badgeIdLabel: "Badge ID",
+      verifiedStatus: "✓ VERIFIED ACHIEVEMENT",
+      printBadge: "Print Badge",
+      downloadBadge: "Download Badge (.html)",
+      badgeSavedOffline: "Badge saved on this device.",
     },
     profile: {
       title: "Student Profile",
@@ -449,6 +467,15 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       streakBadges: "सातत्य आणि निष्ठा",
       unlocked: "अनलॉक झाले",
       locked: "प्रगतीत",
+      viewBadge: "बॅज पहा",
+      awardedTo: "गौरविण्यात आले",
+      earnedOn: "मिळाले",
+      reward: "इनाम",
+      badgeIdLabel: "बॅज आयडी",
+      verifiedStatus: "✓ सत्यापित कामगिरी (VERIFIED ACHIEVEMENT)",
+      printBadge: "बॅज प्रिंट करा",
+      downloadBadge: "बॅज डाउनलोड करा (.html)",
+      badgeSavedOffline: "बॅज या डिव्हाइसवर सुरक्षित साठवला आहे.",
     },
     profile: {
       title: "विद्यार्थी प्रोफाईल",
@@ -614,6 +641,15 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       streakBadges: "स्ट्रीक और समर्पण",
       unlocked: "अनलॉक",
       locked: "प्रगति में",
+      viewBadge: "बैज देखें",
+      awardedTo: "सम्मानित किया गया",
+      earnedOn: "अर्जित किया",
+      reward: "इनाम",
+      badgeIdLabel: "बैज आईडी",
+      verifiedStatus: "✓ सत्यापित उपलब्धि (VERIFIED ACHIEVEMENT)",
+      printBadge: "बैज प्रिंट करें",
+      downloadBadge: "बैज डाउनलोड करें (.html)",
+      badgeSavedOffline: "बैज इस डिवाइस पर सुरक्षित सहेजा गया है।",
     },
     profile: {
       title: "छात्र प्रोफ़ाइल",
