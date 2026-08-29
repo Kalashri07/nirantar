@@ -8,6 +8,8 @@ export interface Translations {
     library: string;
     missions: string;
     achievements: string;
+    leaderboard: string;
+    challenges: string;
     profile: string;
   };
   connectivity: {
@@ -20,6 +22,46 @@ export interface Translations {
     syncingBanner: string;
     syncedBanner: string;
     pendingSyncText: string;
+  };
+  leaderboard: {
+    title: string;
+    subtitle: string;
+    weeklyTab: string;
+    monthlyTab: string;
+    allTimeTab: string;
+    allSubjects: string;
+    rankCol: string;
+    learnerCol: string;
+    xpCol: string;
+    levelCol: string;
+    missionsCol: string;
+    yourPositionTitle: string;
+    yourRank: string;
+    pointsNeeded: string;
+  };
+  challenges: {
+    title: string;
+    subtitle: string;
+    createTitle: string;
+    chooseFriend: string;
+    challengeType: string;
+    duration: string;
+    goal: string;
+    goalDesc: string;
+    startBtn: string;
+    vsTitle: string;
+    timeRemaining: string;
+    currentLeader: string;
+    aheadBy: string;
+    completeTitle: string;
+    youWon: string;
+    friendWon: string;
+    rewardEarned: string;
+    badgeAwarded: string;
+    prevChallenges: string;
+    winner: string;
+    offlineNotice: string;
+    syncedNotice: string;
   };
   home: {
     welcomeSub: string;
@@ -115,7 +157,49 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       library: "My Library",
       missions: "Missions",
       achievements: "Achievements",
+      leaderboard: "Leaderboard",
+      challenges: "Challenges",
       profile: "Profile",
+    },
+    leaderboard: {
+      title: "Leaderboard",
+      subtitle: "See how you're progressing with other learners.",
+      weeklyTab: "This Week",
+      monthlyTab: "This Month",
+      allTimeTab: "All Time",
+      allSubjects: "All Subjects",
+      rankCol: "Rank",
+      learnerCol: "Learner",
+      xpCol: "XP",
+      levelCol: "Level",
+      missionsCol: "Missions Done",
+      yourPositionTitle: "Your Position",
+      yourRank: "Rank",
+      pointsNeeded: "XP to reach",
+    },
+    challenges: {
+      title: "Personal Challenges",
+      subtitle: "Challenge a friend and see who can earn more XP.",
+      createTitle: "Challenge a Friend",
+      chooseFriend: "Choose a friend",
+      challengeType: "Challenge Type",
+      duration: "Challenge Duration",
+      goal: "Challenge Goal",
+      goalDesc: "Earn the most XP during the challenge period.",
+      startBtn: "Start Challenge",
+      vsTitle: "FRIEND CHALLENGE",
+      timeRemaining: "Time Remaining",
+      currentLeader: "Current Leader",
+      aheadBy: "ahead",
+      completeTitle: "CHALLENGE COMPLETE!",
+      youWon: "You Won!",
+      friendWon: "Won!",
+      rewardEarned: "Bonus XP Reward",
+      badgeAwarded: "Friend Challenge Winner",
+      prevChallenges: "Previous Challenges",
+      winner: "Winner",
+      offlineNotice: "OFFLINE — Challenge progress saved on this device.",
+      syncedNotice: "SYNCED — Challenge progress synchronized.",
     },
     connectivity: {
       online: "Online",
@@ -220,7 +304,49 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       library: "माझी लायब्ररी",
       missions: "मोहिमा",
       achievements: "उपलब्धी",
+      leaderboard: "गुणतालिका",
+      challenges: "मित्र आव्हाने",
       profile: "माझे प्रोफाईल",
+    },
+    leaderboard: {
+      title: "गुणतालिका (Leaderboard)",
+      subtitle: "इतर विद्यार्थ्यांच्या तुलनेत तुमची प्रगती तपासा.",
+      weeklyTab: "या आठवड्यात",
+      monthlyTab: "या महिन्यात",
+      allTimeTab: "सर्वकालीन",
+      allSubjects: "सर्व विषय",
+      rankCol: "क्रमांक",
+      learnerCol: "विद्यार्थी",
+      xpCol: "गुण (XP)",
+      levelCol: "पातळी",
+      missionsCol: "पूर्ण मोहिमा",
+      yourPositionTitle: "तुमचे स्थान",
+      yourRank: "क्रमांक",
+      pointsNeeded: "पुढील क्रमांकासाठी XP",
+    },
+    challenges: {
+      title: "मित्रांसोबत वैयक्तिक आव्हान",
+      subtitle: "मित्राला आव्हान द्या आणि कोणाला जास्त XP मिळतात ते पहा.",
+      createTitle: "मित्राला आव्हान द्या",
+      chooseFriend: "मित्र निवडा",
+      challengeType: "आव्हानाचा विषय",
+      duration: "आव्हानाचा कालावधी",
+      goal: "आव्हानाचे ध्येय",
+      goalDesc: "कालावधीत सर्वात जास्त XP मिळवणे.",
+      startBtn: "आव्हान सुरू करा",
+      vsTitle: "मित्र विरुद्ध मित्र स्पर्धा",
+      timeRemaining: "उरलेला वेळ",
+      currentLeader: "सध्या आघाडीवर",
+      aheadBy: "गुणांनी पुढे",
+      completeTitle: "आव्हान पूर्ण झाले!",
+      youWon: "तुम्ही जिंकलात! 🎉",
+      friendWon: "जिंकला!",
+      rewardEarned: "बोनस XP बक्षीस",
+      badgeAwarded: "मित्र आव्हान विजेता पदक",
+      prevChallenges: "मागील आव्हाने",
+      winner: "विजेता",
+      offlineNotice: "ऑफलाइन — आव्हान प्रगती या फोनमध्ये सुरक्षित साठवली आहे.",
+      syncedNotice: "सिंक झाले — आव्हान प्रगती क्लाउडवर सिंक झाली.",
     },
     connectivity: {
       online: "ऑनलाइन",
@@ -325,7 +451,49 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       library: "मेरी लाइब्रेरी",
       missions: "मिशन",
       achievements: "उपलब्धियां",
+      leaderboard: "लीडरबोर्ड",
+      challenges: "मित्र चुनौतियाँ",
       profile: "प्रोफ़ाइल",
+    },
+    leaderboard: {
+      title: "लीडरबोर्ड (Leaderboard)",
+      subtitle: "अन्य शिक्षार्थियों के साथ अपनी प्रगति देखें।",
+      weeklyTab: "इस सप्ताह",
+      monthlyTab: "इस महीने",
+      allTimeTab: "सर्वकालिक",
+      allSubjects: "सभी विषय",
+      rankCol: "रैंक",
+      learnerCol: "शिक्षार्थी",
+      xpCol: "अंक (XP)",
+      levelCol: "स्तर",
+      missionsCol: "पूर्ण मिशन",
+      yourPositionTitle: "आपकी स्थिति",
+      yourRank: "रैंक",
+      pointsNeeded: "अगली रैंक के लिए आवश्यक XP",
+    },
+    challenges: {
+      title: "दोस्तों के साथ व्यक्तिगत चुनौती",
+      subtitle: "किसी मित्र को चुनौती दें और देखें कि कौन अधिक XP अर्जित करता है।",
+      createTitle: "मित्र को चुनौती दें",
+      chooseFriend: "मित्र चुनें",
+      challengeType: "चुनौती का विषय",
+      duration: "चुनौती की अवधि",
+      goal: "चुनौती का लक्ष्य",
+      goalDesc: "अवधि के दौरान सबसे अधिक XP अर्जित करना।",
+      startBtn: "चुनौती शुरू करें",
+      vsTitle: "मित्र बनाम मित्र मुकाबला",
+      timeRemaining: "शेष समय",
+      currentLeader: "वर्तमान में आगे",
+      aheadBy: "अंकों से आगे",
+      completeTitle: "चुनौती पूर्ण हुई!",
+      youWon: "आप जीत गए! 🎉",
+      friendWon: "जीत गया!",
+      rewardEarned: "बोनस XP पुरस्कार",
+      badgeAwarded: "मित्र चुनौती विजेता पदक",
+      prevChallenges: "पिछली चुनौतियाँ",
+      winner: "विजेता",
+      offlineNotice: "ऑफलाइन — चुनौती प्रगति इस डिवाइस पर सुरक्षित है।",
+      syncedNotice: "सिंक हुआ — चुनौती प्रगति क्लाउड पर सिंक हो गई।",
     },
     connectivity: {
       online: "ऑनलाइन",

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Home,
   BookOpen,
@@ -8,6 +7,8 @@ import {
   User,
   Zap,
   WifiOff,
+  Trophy,
+  Swords,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -39,6 +40,16 @@ export const Sidebar: React.FC = () => {
       id: 'achievements',
       label: t.nav.achievements,
       icon: Award,
+    },
+    {
+      id: 'leaderboard',
+      label: t.nav.leaderboard,
+      icon: Trophy,
+    },
+    {
+      id: 'challenges',
+      label: t.nav.challenges,
+      icon: Swords,
     },
     {
       id: 'profile',

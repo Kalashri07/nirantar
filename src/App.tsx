@@ -7,6 +7,8 @@ import { LearnCatalog } from './components/LearnCatalog';
 import { MyLibrary } from './components/MyLibrary';
 import { MissionsView } from './components/MissionsView';
 import { AchievementsView } from './components/AchievementsView';
+import { LeaderboardView } from './components/LeaderboardView';
+import { PersonalChallengesView } from './components/PersonalChallengesView';
 import { ProfileSettings } from './components/ProfileSettings';
 import { LessonWorkspace } from './components/LessonWorkspace';
 import { PackDetailsModal } from './components/PackDetailsModal';
@@ -31,6 +33,8 @@ export const MainLayout: React.FC = () => {
           {(currentNav === 'library' || currentNav === 'downloads') && <MyLibrary />}
           {currentNav === 'missions' && <MissionsView />}
           {currentNav === 'achievements' && <AchievementsView />}
+          {currentNav === 'leaderboard' && <LeaderboardView />}
+          {currentNav === 'challenges' && <PersonalChallengesView />}
           {currentNav === 'profile' && <ProfileSettings />}
         </main>
       </div>

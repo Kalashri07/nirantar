@@ -4,7 +4,39 @@ export type ConnectivityMode = 'online' | 'low_data' | 'offline';
 
 export type LearnerType = 'school' | 'undergrad';
 
-export type NavSection = 'home' | 'learn' | 'library' | 'missions' | 'achievements' | 'profile';
+export type NavSection = 'home' | 'learn' | 'library' | 'missions' | 'achievements' | 'leaderboard' | 'challenges' | 'profile';
+
+export interface LeaderboardLearner {
+  id: string;
+  rank: number;
+  name: string;
+  avatar: string;
+  xp: number;
+  level: number;
+  missionsCompleted: number;
+  streakDays: number;
+  isCurrentUser?: boolean;
+  subject: string;
+}
+
+export interface FriendChallenge {
+  id: string;
+  friendName: string;
+  friendAvatar: string;
+  friendLevel: number;
+  subjectType: string;
+  durationDays: number;
+  userXp: number;
+  friendXp: number;
+  userMissionsCompleted: number;
+  friendMissionsCompleted: number;
+  startedAt: string;
+  endsAt: string;
+  isActive: boolean;
+  isCompleted: boolean;
+  winner?: 'user' | 'friend';
+  rewardClaimed?: boolean;
+}
 
 export interface UserProfile {
   name: string;

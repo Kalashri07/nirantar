@@ -9,9 +9,11 @@ import type {
   MissionItem,
   BadgeItem,
   DataUsageStats,
+  FriendChallenge,
 } from '../types';
 import { translations, type Translations } from '../data/translations';
 import { initialUserProfile, learningPacks as initialPacks, mockMissions, mockBadges } from '../data/mockData';
+import { defaultActiveChallenge, mockChallengeHistory } from '../data/mockLeaderboardData';
 
 interface AppContextType {
   language: Language;
@@ -46,6 +48,12 @@ interface AppContextType {
   setDemoStep: (step: number) => void;
   isDemoBarVisible: boolean;
   setIsDemoBarVisible: (visible: boolean) => void;
+  // Leaderboard & Friend Challenge
+  activeChallenge: FriendChallenge | null;
+  challengeHistory: typeof mockChallengeHistory;
+  startFriendChallenge: (friendName: string, subjectType: string, durationDays: number) => void;
+  completeActiveChallenge: () => void;
+  claimChallengeBonusXp: () => void;
   currentNav: string;
   setCurrentNav: (nav: string) => void;
   resetAllDemoState: () => void;
@@ -61,6 +69,8 @@ const STORAGE_KEYS = {
   CONN_MODE: 'nirantar_conn_mode_v2',
   MISSIONS: 'nirantar_missions_v2',
   BADGES: 'nirantar_badges_v2',
+  CHALLENGE: 'nirantar_active_challenge_v2',
+  CHALLENGE_HIST: 'nirantar_challenge_hist_v2',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -121,6 +131,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : mockBadges;
   });
 
+  // 7. Friend Challenge State
+  const [activeChallenge, setActiveChallenge] = useState<FriendChallenge | null>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.CHALLENGE);
+    return saved ? JSON.parse(saved) : defaultActiveChallenge;
+  });
+
+  const [challengeHistory, setChallengeHistory] = useState<typeof mockChallengeHistory>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.CHALLENGE_HIST);
+    return saved ? JSON.parse(saved) : mockChallengeHistory;
+  });
+
   // Sync state animations
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
@@ -165,6 +186,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.BADGES, JSON.stringify(badges));
   }, [badges]);
+
+  useEffect(() => {
+    if (activeChallenge) {
+      localStorage.setItem(STORAGE_KEYS.CHALLENGE, JSON.stringify(activeChallenge));
+    }
+  }, [activeChallenge]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.CHALLENGE_HIST, JSON.stringify(challengeHistory));
+  }, [challengeHistory]);
 
   // Network mode switcher with Auto-Sync engine
   const setConnectivityMode = (newMode: ConnectivityMode) => {
@@ -320,6 +351,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setPendingSyncQueue((prev) => [syncItem, ...prev]);
     }
 
+    // Update active friend challenge dynamically if active
+    if (activeChallenge && !activeChallenge.isCompleted) {
+      setActiveChallenge((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          userXp: prev.userXp + xpEarned,
+          userMissionsCompleted: prev.userMissionsCompleted + 1,
+        };
+      });
+    }
+
     if (packId === 'physics-quest') {
       setBadges((prev) =>
         prev.map((b) =>
@@ -341,12 +384,97 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // Friend Challenge Actions
+  const startFriendChallenge = (friendName: string, subjectType: string, durationDays: number) => {
+    const friendLevels: Record<string, number> = { Aarav: 7, Anaya: 7, Rohan: 6, Kavya: 6 };
+    const friendBaseXp: Record<string, number> = { Aarav: 380, Anaya: 410, Rohan: 320, Kavya: 350 };
+
+    const newChallenge: FriendChallenge = {
+      id: `ch-${Date.now()}`,
+      friendName,
+      friendAvatar: friendName.charAt(0),
+      friendLevel: friendLevels[friendName] || 6,
+      subjectType,
+      durationDays,
+      userXp: 420,
+      friendXp: friendBaseXp[friendName] || 380,
+      userMissionsCompleted: 3,
+      friendMissionsCompleted: 2,
+      startedAt: new Date().toISOString().split('T')[0],
+      endsAt: new Date(Date.now() + durationDays * 86400000).toISOString().split('T')[0],
+      isActive: true,
+      isCompleted: false,
+    };
+
+    setActiveChallenge(newChallenge);
+    triggerCelebration();
+  };
+
+  const completeActiveChallenge = () => {
+    if (!activeChallenge) return;
+    const isUserWinner = activeChallenge.userXp >= activeChallenge.friendXp;
+    
+    setActiveChallenge((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        isCompleted: true,
+        winner: isUserWinner ? 'user' : 'friend',
+      };
+    });
+
+    // Add to history
+    setChallengeHistory((prev) => [
+      {
+        id: `hist-${Date.now()}`,
+        friendName: activeChallenge.friendName,
+        userXp: activeChallenge.userXp,
+        friendXp: activeChallenge.friendXp,
+        winner: isUserWinner ? 'You' : activeChallenge.friendName,
+        date: 'Just now',
+        subject: `${activeChallenge.subjectType} Challenge`,
+      },
+      ...prev,
+    ]);
+
+    if (isUserWinner) {
+      triggerCelebration();
+    }
+  };
+
+  const claimChallengeBonusXp = () => {
+    if (!activeChallenge || activeChallenge.rewardClaimed) return;
+
+    setActiveChallenge((prev) => prev ? { ...prev, rewardClaimed: true } : null);
+
+    // Award +100 bonus XP
+    setUserProfile((prev) => {
+      const nextXp = prev.currentXp + 100;
+      let nextLevel = prev.level;
+      let nextTarget = prev.targetXp;
+      if (nextXp >= prev.targetXp) {
+        nextLevel += 1;
+        nextTarget += 1000;
+      }
+      return { ...prev, currentXp: nextXp, level: nextLevel, targetXp: nextTarget };
+    });
+
+    // Unlock badge
+    setBadges((prev) =>
+      prev.map((b) =>
+        b.id === 'b-friend-champion' ? { ...b, isUnlocked: true, unlockedAt: 'Just now' } : b
+      )
+    );
+
+    triggerCelebration();
+  };
+
   const triggerCelebration = () => {
     confetti({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#10b981', '#38bdf8', '#fbbf24', '#f43f5e'],
+      colors: ['#3457D5', '#C9A96E', '#10B981', '#F59E0B'],
     });
   };
 
@@ -357,10 +485,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setPendingSyncQueue([]);
     setMissions(mockMissions);
     setBadges(mockBadges);
+    setActiveChallenge(defaultActiveChallenge);
+    setChallengeHistory(mockChallengeHistory);
     setConnectivityModeState('online');
     setLanguageState('en');
     setDemoStep(1);
-    setCurrentNav('dashboard');
+    setCurrentNav('home');
   };
 
   return (
@@ -398,6 +528,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setDemoStep,
         isDemoBarVisible,
         setIsDemoBarVisible,
+        activeChallenge,
+        challengeHistory,
+        startFriendChallenge,
+        completeActiveChallenge,
+        claimChallengeBonusXp,
         currentNav,
         setCurrentNav,
         resetAllDemoState,
