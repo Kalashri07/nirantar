@@ -6,9 +6,7 @@ import {
   AlertCircle,
   Play,
   RotateCcw,
-  Check,
   Award,
-  Sparkles,
   BookOpen,
   WifiOff,
   Zap,
@@ -167,12 +165,12 @@ export const LessonWorkspace: React.FC = () => {
         {/* COMPLETED SCREEN */}
         {isFinished ? (
           <div className="p-8 sm:p-12 text-center space-y-6 max-w-md mx-auto my-auto">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 mx-auto flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+              <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider">
                 {t.lesson.completedTitle}
               </span>
               <h3 className="text-2xl font-bold text-slate-900 mt-1">
@@ -186,7 +184,7 @@ export const LessonWorkspace: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-[11px] text-slate-400 block font-medium">Points Earned</span>
-                <span className="text-lg font-bold text-emerald-700">+{pack.xpReward} XP</span>
+                <span className="text-lg font-bold text-indigo-700">+{pack.xpReward} XP</span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-[11px] text-slate-400 block font-medium">Badge Awarded</span>
@@ -199,7 +197,7 @@ export const LessonWorkspace: React.FC = () => {
 
             <button
               onClick={() => setActiveLessonPackId(null)}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors"
             >
               {t.lesson.backToCourse}
             </button>
@@ -228,7 +226,7 @@ export const LessonWorkspace: React.FC = () => {
                       }}
                       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left transition-colors ${
                         isActive
-                          ? 'bg-white text-emerald-800 border border-emerald-200 shadow-2xs font-semibold'
+                          ? 'bg-white text-indigo-800 border border-indigo-200 shadow-2xs font-semibold'
                           : isDone
                           ? 'text-slate-700 hover:bg-slate-100'
                           : 'text-slate-400 hover:bg-slate-100'
@@ -237,9 +235,9 @@ export const LessonWorkspace: React.FC = () => {
                       <div
                         className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
                           isDone
-                            ? 'bg-emerald-600 text-white'
+                            ? 'bg-indigo-600 text-white'
                             : isActive
-                            ? 'border-2 border-emerald-600 text-emerald-600'
+                            ? 'border-2 border-indigo-600 text-indigo-600 font-bold'
                             : 'border border-slate-300 text-slate-400'
                         }`}
                       >
@@ -258,7 +256,7 @@ export const LessonWorkspace: React.FC = () => {
                 <div className="space-y-6">
                   {/* Step Title & Explanation */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">
                       {t.lesson.stepCount} {currentStepIndex + 1} of {mission.steps.length}
                     </span>
                     <h3 className="text-lg sm:text-xl font-bold text-slate-900">
@@ -274,14 +272,14 @@ export const LessonWorkspace: React.FC = () => {
                     <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-4 max-w-2xl">
                       <div className="flex items-center justify-between text-xs font-medium text-slate-600">
                         <span>Cart Mass: 150 kg | Initial Velocity: 12 m/s</span>
-                        <span className="font-semibold text-emerald-800">Target: Stop before 30m</span>
+                        <span className="font-semibold text-indigo-700">Target: Stop before 30m</span>
                       </div>
 
                       {/* Track */}
                       <div className="relative w-full h-14 bg-white border border-slate-200 rounded-lg overflow-hidden flex items-center px-4">
                         <div className="absolute right-3 w-2.5 h-8 bg-rose-500 rounded-sm" />
                         <div
-                          className={`transition-all duration-700 px-3 py-1.5 bg-emerald-600 text-white rounded-md text-xs font-medium flex items-center gap-1.5 ${
+                          className={`transition-all duration-700 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-xs font-medium flex items-center gap-1.5 ${
                             cartSimulating ? 'translate-x-48' : 'translate-x-1'
                           }`}
                         >
@@ -299,7 +297,7 @@ export const LessonWorkspace: React.FC = () => {
                             step="20"
                             value={appliedBrakingForce}
                             onChange={(e) => setAppliedBrakingForce(Number(e.target.value))}
-                            className="accent-emerald-600 cursor-pointer"
+                            className="accent-indigo-600 cursor-pointer"
                           />
                           <span className="text-xs font-mono font-bold text-slate-900">{appliedBrakingForce} N</span>
                         </div>
@@ -316,7 +314,7 @@ export const LessonWorkspace: React.FC = () => {
                       {cartStoppedDistance !== null && (
                         <p className="text-xs font-medium text-slate-700 pt-1">
                           {cartStoppedDistance <= 30 ? (
-                            <span className="text-emerald-700">✓ Cart stopped safely in {cartStoppedDistance} meters!</span>
+                            <span className="text-indigo-700 font-semibold">✓ Cart stopped safely in {cartStoppedDistance} meters!</span>
                           ) : (
                             <span className="text-rose-700">⚠️ Cart required {cartStoppedDistance} meters. Increase braking force!</span>
                           )}
@@ -336,7 +334,7 @@ export const LessonWorkspace: React.FC = () => {
                               `# Sensor Data Aggregator\nreadings = [28, 31, 29, 30, 32]\ntotal = 0\nfor temp in readings:\n    total += temp\n\naverage = total / len(readings)\nprint(f"Average: {average} C")`
                             )
                           }
-                          className="text-[11px] text-emerald-700 hover:underline flex items-center gap-1 font-sans font-medium"
+                          className="text-[11px] text-indigo-700 hover:underline flex items-center gap-1 font-sans font-medium"
                         >
                           <RotateCcw className="w-3 h-3" /> Auto-Fix
                         </button>
@@ -346,7 +344,7 @@ export const LessonWorkspace: React.FC = () => {
                         value={codeContent}
                         onChange={(e) => setCodeContent(e.target.value)}
                         rows={5}
-                        className="w-full bg-white p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-white p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:border-indigo-500"
                         spellCheck={false}
                       />
 
@@ -363,7 +361,7 @@ export const LessonWorkspace: React.FC = () => {
                         <div
                           className={`p-2.5 rounded-lg text-xs font-mono ${
                             codeSuccess
-                              ? 'bg-emerald-50 border border-emerald-200 text-emerald-900'
+                              ? 'bg-indigo-50 border border-indigo-200 text-indigo-900'
                               : 'bg-rose-50 border border-rose-200 text-rose-900'
                           }`}
                         >
@@ -393,7 +391,7 @@ export const LessonWorkspace: React.FC = () => {
                             }}
                             className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-colors ${
                               selectedReagent === item
-                                ? 'bg-white border-emerald-500 text-emerald-900 font-bold ring-1 ring-emerald-500'
+                                ? 'bg-white border-indigo-500 text-indigo-900 font-bold ring-1 ring-indigo-500'
                                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -422,12 +420,12 @@ export const LessonWorkspace: React.FC = () => {
 
                           if (hasSubmitted) {
                             if (opt.isCorrect) {
-                              style = 'bg-emerald-50 border-emerald-400 text-emerald-900 font-medium';
+                              style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-medium';
                             } else if (isSelected && !opt.isCorrect) {
                               style = 'bg-rose-50 border-rose-300 text-rose-900';
                             }
                           } else if (isSelected) {
-                            style = 'bg-emerald-50 border-emerald-400 text-emerald-900 font-medium ring-1 ring-emerald-400';
+                            style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-medium ring-1 ring-indigo-400';
                           }
 
                           return (
@@ -438,7 +436,7 @@ export const LessonWorkspace: React.FC = () => {
                             >
                               <span>{opt.text[language]}</span>
                               {hasSubmitted && opt.isCorrect && (
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                               )}
                             </button>
                           );
@@ -450,7 +448,7 @@ export const LessonWorkspace: React.FC = () => {
                         <div
                           className={`p-3 rounded-xl border text-xs leading-relaxed ${
                             stepCompleted
-                              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                              ? 'bg-indigo-50 border-indigo-200 text-indigo-900'
                               : 'bg-rose-50 border-rose-200 text-rose-900'
                           }`}
                         >
@@ -491,14 +489,14 @@ export const LessonWorkspace: React.FC = () => {
                 <button
                   onClick={handleVerifyAnswer}
                   disabled={!selectedOptionId}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
                 >
                   {t.lesson.checkAnswer}
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1"
                 >
                   <span>
                     {currentStepIndex === mission.steps.length - 1

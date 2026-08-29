@@ -8,12 +8,9 @@ import {
   ShieldAlert,
   Search,
   CheckCircle2,
-  Download,
   ArrowRight,
-  Filter,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import type { LearningPack } from '../types';
 
 export const LearnCatalog: React.FC = () => {
   const { learningPacks, language, t, setActiveLessonPackId, setActivePackModalId } = useApp();
@@ -64,6 +61,21 @@ export const LearnCatalog: React.FC = () => {
     }
   };
 
+  const getSubjectColors = (worldId: string) => {
+    switch (worldId) {
+      case 'science':
+        return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };
+      case 'math':
+        return { bg: 'bg-amber-50', text: 'text-amber-800', border: 'border-amber-200' };
+      case 'language':
+        return { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' };
+      case 'tech':
+        return { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' };
+      default:
+        return { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' };
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-2">
       {/* Header */}
@@ -83,13 +95,13 @@ export const LearnCatalog: React.FC = () => {
           }}
           className={`pb-3 text-sm font-semibold transition-colors relative ${
             selectedAudience === 'School'
-              ? 'text-emerald-700 font-bold'
+              ? 'text-indigo-700 font-bold'
               : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           <span>{t.learn.schoolTab}</span>
           {selectedAudience === 'School' && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
           )}
         </button>
 
@@ -100,13 +112,13 @@ export const LearnCatalog: React.FC = () => {
           }}
           className={`pb-3 text-sm font-semibold transition-colors relative ${
             selectedAudience === 'Undergraduate'
-              ? 'text-emerald-700 font-bold'
+              ? 'text-indigo-700 font-bold'
               : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           <span>{t.learn.undergradTab}</span>
           {selectedAudience === 'Undergraduate' && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
           )}
         </button>
       </div>
@@ -138,7 +150,7 @@ export const LearnCatalog: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filter courses..."
-            className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500"
           />
         </div>
       </div>
@@ -147,6 +159,7 @@ export const LearnCatalog: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
         {filteredPacks.map((module) => {
           const Icon = getSubjectIcon(module.icon);
+          const colors = getSubjectColors(module.worldId);
           return (
             <div
               key={module.id}
@@ -155,7 +168,7 @@ export const LearnCatalog: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-center">
+                    <div className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} ${colors.text} flex items-center justify-center`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
@@ -171,7 +184,7 @@ export const LearnCatalog: React.FC = () => {
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                       module.isDownloaded
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                         : 'bg-slate-100 text-slate-500'
                     }`}
                   >
@@ -204,7 +217,7 @@ export const LearnCatalog: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveLessonPackId(module.id)}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors flex items-center gap-1.5"
                 >
                   <span>Start Course</span>
                   <ArrowRight className="w-3 h-3" />

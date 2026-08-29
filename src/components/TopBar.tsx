@@ -53,28 +53,28 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
       )}
 
       {isSyncing && (
-        <div className="bg-emerald-600 text-white px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2">
+        <div className="bg-indigo-600 text-white px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2">
           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
           <span>{t.connectivity.syncingBanner}</span>
         </div>
       )}
 
       {syncSuccessMessage && !isSyncing && (
-        <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-1.5 text-xs text-emerald-900 font-medium flex items-center justify-center gap-2">
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+        <div className="bg-indigo-50 border-b border-indigo-200 px-4 py-1.5 text-xs text-indigo-900 font-medium flex items-center justify-center gap-2">
+          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
           <span>{t.connectivity.syncedBanner}</span>
         </div>
       )}
 
       {/* Main Top Header */}
-      <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 sticky top-0 z-20">
+      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 sticky top-0 z-20">
         {/* Search Learning Content */}
         <div className="relative w-full max-w-xs sm:max-w-sm">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search courses, lessons, topics..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-emerald-500 transition-colors"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 transition-colors"
           />
         </div>
 
@@ -86,7 +86,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               onClick={() => setLanguage('en')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'en'
-                  ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
@@ -96,7 +96,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               onClick={() => setLanguage('mr')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'mr'
-                  ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
@@ -106,7 +106,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               onClick={() => setLanguage('hi')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'hi'
-                  ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
@@ -177,7 +177,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
             onClick={() => setCurrentNav('profile')}
             className="flex items-center gap-2 pl-1 sm:pl-2 text-slate-700 hover:text-slate-900"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center border border-emerald-200">
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center border border-indigo-200">
               {userProfile.name.charAt(0)}
             </div>
             <div className="hidden lg:block text-left text-xs">

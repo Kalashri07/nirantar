@@ -2,7 +2,9 @@
 
 @layer base {
   :root {
-    --color-primary: #10b981;
+    --color-primary: #4f46e5;
+    --color-primary-light: #eef2ff;
+    --color-accent: #8b5cf6;
     --color-bg-light: #f8fafc;
   }
 
@@ -35,7 +37,7 @@
 .app-card {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
 }
 
 .app-card-hover {
@@ -44,7 +46,7 @@
 
 .app-card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
   border-color: #cbd5e1;
 }
 
@@ -59,9 +61,9 @@
   transition: none !important;
 }
 
-/* Shimmer gradient effect for XP level bar */
+/* Shimmer gradient effect for progress bar */
 .xp-shimmer {
-  background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #10b981 100%);
+  background: linear-gradient(90deg, #4f46e5 0%, #818cf8 50%, #4f46e5 100%);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }

@@ -8,7 +8,6 @@ import {
   User,
   Zap,
   WifiOff,
-  CheckCircle2,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -51,14 +50,14 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       {/* Desktop & Tablet Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 lg:w-68 bg-white border-r border-slate-200 min-h-screen sticky top-0 z-30 p-5 justify-between select-none">
+      <aside className="hidden md:flex flex-col w-64 lg:w-68 bg-white border-r border-slate-200/90 min-h-screen sticky top-0 z-30 p-5 justify-between select-none">
         <div className="space-y-6">
           {/* Brand Logo & Name */}
           <button
             onClick={() => setCurrentNav('home')}
             className="flex items-center gap-3 px-2 text-left group w-full"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs group-hover:bg-emerald-700 transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-2xs group-hover:bg-indigo-700 transition-colors">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
@@ -82,13 +81,13 @@ export const Sidebar: React.FC = () => {
                   onClick={() => setCurrentNav(item.id)}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
                     isActive
-                      ? 'bg-emerald-50 text-emerald-800 font-semibold'
+                      ? 'bg-indigo-50/90 text-indigo-700 font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
                   <Icon
                     className={`w-4 h-4 ${
-                      isActive ? 'text-emerald-700' : 'text-slate-400'
+                      isActive ? 'text-indigo-600' : 'text-slate-400'
                     }`}
                   />
                   <span>{item.label}</span>
@@ -143,7 +142,7 @@ export const Sidebar: React.FC = () => {
               key={item.id}
               onClick={() => setCurrentNav(item.id)}
               className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
-                isActive ? 'text-emerald-700 font-bold' : 'text-slate-500'
+                isActive ? 'text-indigo-600 font-bold' : 'text-slate-500'
               }`}
             >
               <Icon className="w-4 h-4" />

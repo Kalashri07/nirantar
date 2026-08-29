@@ -4,18 +4,11 @@ import {
   Award,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
-  Calendar,
-  Zap,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const MissionsView: React.FC = () => {
   const { missions, claimMissionReward, language, t, setActiveLessonPackId } = useApp();
-
-  const dailyMissions = missions.filter((m) => m.type === 'daily');
-  const weeklyMissions = missions.filter((m) => m.type === 'weekly');
-  const subjectMissions = missions.filter((m) => m.type === 'subject');
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-2">
@@ -31,7 +24,7 @@ export const MissionsView: React.FC = () => {
       <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
               <Target className="w-5 h-5" />
             </div>
             <div>
@@ -39,7 +32,7 @@ export const MissionsView: React.FC = () => {
               <p className="text-xs text-slate-500">{t.missions.todaysGoalDesc}</p>
             </div>
           </div>
-          <span className="text-xs font-semibold px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200">
+          <span className="text-xs font-semibold px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full border border-indigo-200">
             Active Today
           </span>
         </div>
@@ -47,10 +40,10 @@ export const MissionsView: React.FC = () => {
         <div className="space-y-1.5 pt-1">
           <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
             <span>Progress: 1 / 1 Activity</span>
-            <span className="text-emerald-700 font-bold">100% Complete</span>
+            <span className="text-indigo-700 font-bold">100% Complete</span>
           </div>
           <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-            <div className="bg-emerald-600 h-full rounded-full w-full" />
+            <div className="bg-indigo-600 h-full rounded-full w-full" />
           </div>
         </div>
       </div>
@@ -101,7 +94,7 @@ export const MissionsView: React.FC = () => {
                     <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${
-                          isCompleted ? 'bg-emerald-600' : 'bg-slate-400'
+                          isCompleted ? 'bg-indigo-600' : 'bg-slate-400'
                         }`}
                         style={{ width: `${percentage}%` }}
                       />
@@ -120,14 +113,14 @@ export const MissionsView: React.FC = () => {
                   )}
 
                   {mission.isClaimed ? (
-                    <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4" />
+                    <span className="text-xs font-semibold text-indigo-700 flex items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-600" />
                       <span>{t.missions.completed}</span>
                     </span>
                   ) : isCompleted ? (
                     <button
                       onClick={() => claimMissionReward(mission.id)}
-                      className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors"
+                      className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors"
                     >
                       {t.missions.claimReward}
                     </button>

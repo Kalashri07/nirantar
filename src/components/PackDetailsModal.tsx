@@ -6,7 +6,6 @@ import {
   Clock,
   HardDrive,
   Play,
-  Globe,
   Trash2,
   Layers,
   BookOpen,
@@ -82,7 +81,7 @@ export const PackDetailsModal: React.FC = () => {
           </div>
           <div>
             <span className="text-[11px] text-slate-400 block font-medium">Progress</span>
-            <span className="font-bold text-emerald-700">{pack.progressPercentage}%</span>
+            <span className="font-bold text-indigo-700">{pack.progressPercentage}%</span>
           </div>
         </div>
 
@@ -103,7 +102,7 @@ export const PackDetailsModal: React.FC = () => {
                   <span
                     className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
                       item.completed
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-indigo-600 text-white'
                         : 'border border-slate-300 text-slate-400'
                     }`}
                   >
@@ -136,7 +135,7 @@ export const PackDetailsModal: React.FC = () => {
                 disabled={isOffline || pack.downloadProgress !== undefined}
                 className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 text-xs font-medium text-slate-700 flex items-center gap-1.5"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <Download className="w-3.5 h-3.5 text-indigo-600" />
                 <span>
                   {pack.downloadProgress !== undefined
                     ? `Downloading ${pack.downloadProgress}%...`
@@ -148,7 +147,7 @@ export const PackDetailsModal: React.FC = () => {
 
           <button
             onClick={handleStartMission}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2"
+            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
             <span>Launch Lesson</span>

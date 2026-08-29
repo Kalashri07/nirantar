@@ -1,9 +1,7 @@
 import React from 'react';
 import {
   Award,
-  CheckCircle2,
   Lock,
-  Star,
   Flame,
   Zap,
   WifiOff,
@@ -12,7 +10,6 @@ import {
   Telescope,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import type { BadgeItem } from '../types';
 
 export const AchievementsView: React.FC = () => {
   const { badges, language, t, userProfile } = useApp();
@@ -79,10 +76,10 @@ export const AchievementsView: React.FC = () => {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
                       ✓ {t.achievements.unlocked}
                     </span>
                   </div>

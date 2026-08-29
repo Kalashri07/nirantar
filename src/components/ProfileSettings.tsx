@@ -5,9 +5,6 @@ import {
   Globe,
   Zap,
   HardDrive,
-  RefreshCw,
-  RotateCcw,
-  CheckCircle2,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -38,7 +35,7 @@ export const ProfileSettings: React.FC = () => {
       {/* 1. Student Identity Card */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 font-bold text-xl flex items-center justify-center border border-emerald-200">
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xl flex items-center justify-center border border-indigo-200">
             {userProfile.name.charAt(0)}
           </div>
           <div>
@@ -46,7 +43,7 @@ export const ProfileSettings: React.FC = () => {
             <p className="text-xs text-slate-500">
               {userProfile.gradeOrStream} · {userProfile.learnerType === 'school' ? 'School Student' : 'Undergraduate Scholar'}
             </p>
-            <span className="text-[11px] font-semibold text-emerald-700 mt-1 inline-block">
+            <span className="text-[11px] font-semibold text-indigo-700 mt-1 inline-block">
               Level {userProfile.level} ({userProfile.levelTitle[language]}) · {userProfile.currentXp.toLocaleString()} XP
             </span>
           </div>
@@ -58,7 +55,7 @@ export const ProfileSettings: React.FC = () => {
         {/* Education Details */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-slate-800">
-            <GraduationCap className="w-4 h-4 text-emerald-600" />
+            <GraduationCap className="w-4 h-4 text-indigo-600" />
             <h3 className="text-sm font-bold">{t.profile.educationDetails}</h3>
           </div>
 
@@ -77,7 +74,7 @@ export const ProfileSettings: React.FC = () => {
         {/* Language Selection */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-slate-800">
-            <Globe className="w-4 h-4 text-emerald-600" />
+            <Globe className="w-4 h-4 text-indigo-600" />
             <h3 className="text-sm font-bold">{t.profile.languagePref}</h3>
           </div>
 
@@ -126,7 +123,7 @@ export const ProfileSettings: React.FC = () => {
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors ${
               isLowData
                 ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs'
             }`}
           >
             {isLowData ? 'Disable Low Data' : 'Enable Low Data'}
