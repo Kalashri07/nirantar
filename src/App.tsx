@@ -17,7 +17,7 @@ export const MainLayout: React.FC = () => {
   const { currentNav } = useApp();
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] text-[#20242b] flex">
+    <div className="min-h-screen bg-[#F3EBDD] text-[#102A43] flex">
       {/* 1. Left Vertical Navigation Sidebar */}
       <Sidebar />
 

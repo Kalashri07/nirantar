@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Home,
   BookOpen,
@@ -60,22 +61,22 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Desktop & Tablet Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 lg:w-68 bg-white border-r border-[#EBE8E1] min-h-screen sticky top-0 z-30 p-5 justify-between select-none">
+      {/* Desktop & Tablet Sidebar (Deep Navy Blue structural theme) */}
+      <aside className="hidden md:flex flex-col w-64 lg:w-68 bg-[#102A43] border-r border-[#0C1F33] min-h-screen sticky top-0 z-30 p-5 justify-between select-none shadow-lg">
         <div className="space-y-6">
           {/* Brand Logo & Name */}
           <button
             onClick={() => setCurrentNav('home')}
             className="flex items-center gap-3 px-2 text-left group w-full"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#3457D5] text-white flex items-center justify-center shadow-2xs group-hover:bg-[#2845B2] transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-[#C9B69C] text-[#102A43] flex items-center justify-center font-bold shadow-2xs group-hover:bg-[#BFA98C] transition-colors">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-lg font-bold tracking-tight text-[#20242B] block leading-tight">
+              <span className="text-lg font-bold tracking-tight text-white block leading-tight">
                 Nirantar
               </span>
-              <span className="text-[11px] text-[#7E8796] font-medium block">
+              <span className="text-[11px] text-[#BAC7D5] font-medium block">
                 Offline Learning Platform
               </span>
             </div>
@@ -92,13 +93,13 @@ export const Sidebar: React.FC = () => {
                   onClick={() => setCurrentNav(item.id)}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
                     isActive
-                      ? 'bg-[#EDF1FC] text-[#3457D5] font-semibold'
-                      : 'text-[#4A5160] hover:text-[#20242B] hover:bg-[#F8F7F4]'
+                      ? 'bg-[#C9B69C] text-[#102A43] font-bold shadow-xs'
+                      : 'text-[#BAC7D5] hover:text-white hover:bg-[#1A3B5C]'
                   }`}
                 >
                   <Icon
                     className={`w-4 h-4 ${
-                      isActive ? 'text-[#3457D5]' : 'text-[#7E8796]'
+                      isActive ? 'text-[#102A43]' : 'text-[#8EA2B8]'
                     }`}
                   />
                   <span>{item.label}</span>
@@ -109,7 +110,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Bottom Sidebar Status */}
-        <div className="pt-4 border-t border-[#EBE8E1]">
+        <div className="pt-4 border-t border-[#1C3B5E]">
           <button
             onClick={() => {
               const nextMode =
@@ -120,20 +121,20 @@ export const Sidebar: React.FC = () => {
                   : 'online';
               setConnectivityMode(nextMode);
             }}
-            className="w-full p-2.5 rounded-xl bg-[#F8F7F4] hover:bg-[#EFECE5] border border-[#EBE8E1] flex items-center justify-between text-left transition-colors"
+            className="w-full p-2.5 rounded-xl bg-[#0C1F33] hover:bg-[#15324F] border border-[#1C3B5E] flex items-center justify-between text-left transition-colors"
             title="Click to toggle network simulation mode"
           >
             <div className="flex items-center gap-2">
               {connectivityMode === 'online' && (
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-950" />
               )}
               {connectivityMode === 'low_data' && (
-                <Zap className="w-3.5 h-3.5 text-[#C9A96E]" />
+                <Zap className="w-3.5 h-3.5 text-[#C9B69C]" />
               )}
               {connectivityMode === 'offline' && (
-                <WifiOff className="w-3.5 h-3.5 text-rose-600" />
+                <WifiOff className="w-3.5 h-3.5 text-rose-400" />
               )}
-              <span className="text-xs font-medium text-[#20242B]">
+              <span className="text-xs font-medium text-[#E2E9F0]">
                 {connectivityMode === 'online' && t.connectivity.connected}
                 {connectivityMode === 'low_data' && t.connectivity.lowData}
                 {connectivityMode === 'offline' && t.connectivity.offlineAvailable}
@@ -144,7 +145,7 @@ export const Sidebar: React.FC = () => {
       </aside>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#EBE8E1] py-1.5 px-3 flex items-center justify-around shadow-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#102A43]/95 backdrop-blur-md border-t border-[#0C1F33] py-1.5 px-3 flex items-center justify-around shadow-xl">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentNav === item.id;
@@ -153,7 +154,7 @@ export const Sidebar: React.FC = () => {
               key={item.id}
               onClick={() => setCurrentNav(item.id)}
               className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
-                isActive ? 'text-[#3457D5] font-bold' : 'text-[#7E8796]'
+                isActive ? 'text-[#C9B69C] font-bold' : 'text-[#8EA2B8]'
               }`}
             >
               <Icon className="w-4 h-4" />

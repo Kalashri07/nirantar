@@ -1,18 +1,13 @@
 import React from 'react';
 import {
-  FolderDown,
+  Download,
+  Trash2,
   HardDrive,
   CheckCircle2,
-  Trash2,
   Play,
-  Download,
+  Layers,
+  ArrowRight,
   BookOpen,
-  RefreshCw,
-  Atom,
-  FlaskConical,
-  Calculator,
-  Code2,
-  ShieldAlert,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -20,216 +15,177 @@ export const MyLibrary: React.FC = () => {
   const {
     learningPacks,
     language,
-    t,
     connectivityMode,
     downloadPack,
     removeDownloadedPack,
+    setActivePackModalId,
     setActiveLessonPackId,
+    t,
   } = useApp();
 
-  const downloadedModules = learningPacks.filter((p) => p.isDownloaded);
-  const availableModules = learningPacks.filter((p) => !p.isDownloaded);
+  const downloadedPacks = learningPacks.filter((p) => p.isDownloaded);
+  const availablePacks = learningPacks.filter((p) => !p.isDownloaded);
 
-  const totalUsedMb = downloadedModules.reduce((acc, p) => acc + p.estimatedSizeMb, 0);
-  const maxStorageMb = 250;
-  const storagePercentage = Math.round((totalUsedMb / maxStorageMb) * 100);
+  const totalUsedMb = downloadedPacks
+    .reduce((sum, p) => sum + p.estimatedSizeMb, 0)
+    .toFixed(1);
 
   const isOffline = connectivityMode === 'offline';
 
-  const getSubjectIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Atom':
-        return Atom;
-      case 'FlaskConical':
-        return FlaskConical;
-      case 'Calculator':
-        return Calculator;
-      case 'Code2':
-        return Code2;
-      case 'ShieldAlert':
-        return ShieldAlert;
-      default:
-        return BookOpen;
-    }
-  };
-
-  const getSubjectColors = (worldId: string) => {
-    switch (worldId) {
-      case 'science':
-        return { bg: 'bg-[#EDF1FC]', text: 'text-[#3457D5]', border: 'border-[#C3D2F7]' };
-      case 'math':
-        return { bg: 'bg-[#FAF5ED]', text: 'text-[#977636]', border: 'border-[#E8DCBE]' };
-      case 'language':
-        return { bg: 'bg-[#EEF7F6]', text: 'text-[#2B7A78]', border: 'border-[#CDEAE8]' };
-      case 'tech':
-        return { bg: 'bg-[#EEF2FC]', text: 'text-[#3457D5]', border: 'border-[#CAD6FA]' };
-      default:
-        return { bg: 'bg-[#F8F7F4]', text: 'text-[#4A5160]', border: 'border-[#EBE8E1]' };
-    }
+  const handleStartLesson = (packId: string) => {
+    setActiveLessonPackId(packId);
   };
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-2">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#20242B]">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#102A43]">
           {t.library.title}
         </h1>
-        <p className="text-sm text-[#7E8796] mt-1">{t.library.subtitle}</p>
+        <p className="text-sm text-[#675E54] mt-1">{t.library.subtitle}</p>
       </div>
 
-      {/* Storage Gauge */}
-      <div className="bg-white border border-[#EBE8E1] rounded-2xl p-5 shadow-2xs space-y-3">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-[#7E8796]" />
-            <span className="font-semibold text-[#20242B]">{t.library.storageUsed}</span>
+      {/* 1. Device Storage Status Widget */}
+      <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#E9DDCB] text-[#102A43] flex items-center justify-center flex-shrink-0">
+            <HardDrive className="w-5 h-5" />
           </div>
-          <span className="text-[#7E8796]">
-            <strong className="text-[#20242B]">{totalUsedMb.toFixed(1)} MB</strong> used of {maxStorageMb} MB ({storagePercentage}%)
-          </span>
+          <div>
+            <span className="text-xs font-bold text-[#102A43] block">
+              {t.library.storageUsed}
+            </span>
+            <span className="text-xs text-[#675E54]">
+              {downloadedPacks.length} packs installed · {totalUsedMb} MB of 512 MB offline quota
+            </span>
+          </div>
         </div>
 
-        <div className="w-full bg-[#F8F7F4] h-2 rounded-full overflow-hidden">
-          <div
-            className="bg-[#3457D5] h-full rounded-full transition-all duration-300"
-            style={{ width: `${Math.max(4, storagePercentage)}%` }}
-          />
+        <div className="w-full sm:w-48 space-y-1">
+          <div className="w-full bg-[#E9DDCB] h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-[#102A43] h-full rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(100, (parseFloat(totalUsedMb) / 512) * 100)}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-[#675E54] block text-right font-medium">
+            {totalUsedMb} MB used
+          </span>
         </div>
       </div>
 
-      {/* SECTION 1: DOWNLOADED MODULES */}
-      <div className="space-y-3">
-        <h2 className="text-base font-bold text-[#20242B] flex items-center gap-2">
-          <span>{t.library.downloadedList}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F8F7F4] text-[#4A5160] border border-[#EBE8E1]">
-            {downloadedModules.length}
+      {/* 2. Downloaded Offline Modules */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-bold text-[#102A43]">{t.library.downloadedList}</h2>
+          <span className="text-xs text-[#675E54]">
+            {downloadedPacks.length} packs ready offline
           </span>
-        </h2>
+        </div>
 
-        {downloadedModules.length === 0 ? (
-          <div className="bg-white border border-dashed border-[#EBE8E1] rounded-2xl p-8 text-center text-xs text-[#7E8796] max-w-md mx-auto">
-            <FolderDown className="w-8 h-8 text-[#7E8796] mx-auto mb-2" />
-            <p>{t.library.noDownloads}</p>
+        {downloadedPacks.length === 0 ? (
+          <div className="p-8 border border-dashed border-[#D8CABA] rounded-2xl text-center bg-[#FAF6EF]/60 space-y-2">
+            <p className="text-xs text-[#675E54]">{t.library.noDownloads}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#EBE8E1] bg-white border border-[#EBE8E1] rounded-2xl overflow-hidden shadow-2xs">
-            {downloadedModules.map((module) => {
-              const Icon = getSubjectIcon(module.icon);
-              const colors = getSubjectColors(module.worldId);
-              return (
-                <div
-                  key={module.id}
-                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8F7F4]/60 transition-colors"
-                >
-                  <div className="flex items-start sm:items-center gap-3.5 flex-1">
-                    <div className={`w-10 h-10 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center ${colors.text} flex-shrink-0`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-[#7E8796] uppercase tracking-wider">
-                          {module.subjectName?.[language] || module.worldId}
-                        </span>
-                        <span className="text-[10px] text-[#3457D5] font-semibold flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> {t.library.readyOffline}
-                        </span>
-                      </div>
-                      <h3 className="text-sm font-bold text-[#20242B]">
-                        {module.title[language]}
-                      </h3>
-                      <p className="text-xs text-[#7E8796]">
-                        {module.progressPercentage}% complete · {module.estimatedSizeMb} MB
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end gap-2 pt-2 sm:pt-0">
-                    <button
-                      onClick={() => removeDownloadedPack(module.id)}
-                      className="p-2 text-[#7E8796] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors text-xs font-medium"
-                      title="Remove from device"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setActiveLessonPackId(module.id)}
-                      className="px-4 py-2 bg-[#3457D5] hover:bg-[#2845B2] active:scale-95 text-white text-xs font-semibold rounded-xl shadow-2xs transition-all flex items-center gap-1.5"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-white" />
-                      <span>Start Lesson</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* SECTION 2: AVAILABLE FOR DOWNLOAD */}
-      <div className="space-y-3 pt-2">
-        <h2 className="text-base font-bold text-[#20242B] flex items-center gap-2">
-          <span>{t.library.availableList}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F8F7F4] text-[#4A5160] border border-[#EBE8E1]">
-            {availableModules.length}
-          </span>
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {availableModules.map((module) => {
-            const Icon = getSubjectIcon(module.icon);
-            const colors = getSubjectColors(module.worldId);
-            return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {downloadedPacks.map((pack) => (
               <div
-                key={module.id}
-                className="bg-white border border-[#EBE8E1] rounded-2xl p-4 shadow-2xs flex flex-col justify-between"
+                key={pack.id}
+                className="bg-[#FAF6EF] border border-[#D8CABA] hover:border-[#C9B69C] hover:bg-[#EFE5D5] rounded-2xl p-5 shadow-2xs flex flex-col justify-between transition-all space-y-4"
               >
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} flex items-center justify-center ${colors.text}`}>
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <span className="text-xs font-mono text-[#7E8796]">
-                      {module.estimatedSizeMb} MB
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#675E54] bg-[#E9DDCB] px-2 py-0.5 rounded border border-[#D8CABA]">
+                      {pack.subjectName?.[language] || pack.worldId}
+                    </span>
+                    <span className="text-[10px] text-[#1E573E] bg-[#DCEFE5] px-2 py-0.5 rounded border border-[#B6DEC9] font-medium flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>{t.library.readyOffline}</span>
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-bold text-[#7E8796] uppercase tracking-wider block">
-                      {module.subjectName?.[language] || module.worldId}
-                    </span>
-                    <h3 className="text-xs font-bold text-[#20242B] line-clamp-1">
-                      {module.title[language]}
+                    <h3 className="text-base font-bold text-[#102A43] leading-snug">
+                      {pack.title[language]}
                     </h3>
+                    <p className="text-xs text-[#675E54] mt-1 line-clamp-2 leading-relaxed">
+                      {pack.subtitle[language]}
+                    </p>
+                  </div>
+
+                  <div className="text-[11px] text-[#675E54] flex items-center justify-between pt-1">
+                    <span>{pack.estimatedSizeMb} MB on device</span>
+                    <span className="font-semibold text-[#102A43]">
+                      {pack.progressPercentage}% done
+                    </span>
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3 border-t border-[#EBE8E1]">
+                <div className="pt-3 border-t border-[#D8CABA] flex items-center justify-between gap-2">
                   <button
-                    onClick={() => downloadPack(module.id)}
-                    disabled={isOffline || module.downloadProgress !== undefined}
-                    className="w-full py-2 bg-[#F8F7F4] hover:bg-[#EFECE5] disabled:opacity-40 text-[#4A5160] text-xs font-medium rounded-lg border border-[#EBE8E1] transition-colors flex items-center justify-center gap-1.5"
+                    onClick={() => removeDownloadedPack(pack.id)}
+                    className="p-2 rounded-lg text-rose-700 hover:bg-rose-50 transition-colors"
+                    title={t.library.removeAction}
                   >
-                    {module.downloadProgress !== undefined ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#3457D5]" />
-                        <span>{t.library.downloading} ({module.downloadProgress}%)</span>
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-3.5 h-3.5 text-[#3457D5]" />
-                        <span>{t.library.downloadAction}</span>
-                      </>
-                    )}
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    onClick={() => handleStartLesson(pack.id)}
+                    className="flex-1 py-2 bg-[#102A43] hover:bg-[#0C1F33] active:scale-95 text-white text-xs font-bold rounded-xl shadow-2xs transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-white" />
+                    <span>Study Offline →</span>
                   </button>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* 3. Available for Download */}
+      {availablePacks.length > 0 && (
+        <div className="space-y-4 pt-4">
+          <h2 className="text-base font-bold text-[#102A43]">{t.library.availableList}</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {availablePacks.map((pack) => (
+              <div
+                key={pack.id}
+                className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#675E54] bg-[#E9DDCB] px-2 py-0.5 rounded border border-[#D8CABA]">
+                    {pack.subjectName?.[language] || pack.worldId}
+                  </span>
+                  <h3 className="text-sm font-bold text-[#102A43] leading-snug">
+                    {pack.title[language]}
+                  </h3>
+                  <span className="text-xs text-[#675E54] block">{pack.estimatedSizeMb} MB</span>
+                </div>
+
+                <div className="pt-3 border-t border-[#D8CABA] flex items-center justify-between">
+                  <button
+                    onClick={() => downloadPack(pack.id)}
+                    disabled={isOffline || pack.downloadProgress !== undefined}
+                    className="w-full py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] disabled:opacity-40 text-[#102A43] text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-[#D8CABA]"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#102A43]" />
+                    <span>
+                      {pack.downloadProgress !== undefined
+                        ? `Downloading ${pack.downloadProgress}%...`
+                        : `${t.library.downloadAction} (${pack.estimatedSizeMb} MB)`}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

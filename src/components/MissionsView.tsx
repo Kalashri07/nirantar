@@ -3,135 +3,132 @@ import {
   Target,
   Award,
   CheckCircle2,
+  Clock,
+  Sparkles,
+  Flame,
   ArrowRight,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const MissionsView: React.FC = () => {
-  const { missions, claimMissionReward, language, t, setActiveLessonPackId } = useApp();
+  const { missions, claimMissionReward, language, t } = useApp();
+
+  const activeMissions = missions.filter((m) => !m.isClaimed);
+  const completedMissions = missions.filter((m) => m.isClaimed);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-2">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#20242B]">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#102A43]">
           {t.missions.title}
         </h1>
-        <p className="text-sm text-[#7E8796] mt-1">{t.missions.subtitle}</p>
+        <p className="text-sm text-[#675E54] mt-1">{t.missions.subtitle}</p>
       </div>
 
-      {/* 1. Today's Goal Card */}
-      <div className="bg-white border border-[#EBE8E1] rounded-2xl p-5 sm:p-6 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#EDF1FC] text-[#3457D5] flex items-center justify-center">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[#20242B]">{t.missions.todaysGoal}</h2>
-              <p className="text-xs text-[#7E8796]">{t.missions.todaysGoalDesc}</p>
-            </div>
+      {/* 1. Daily Learning Goal Card */}
+      <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 sm:p-7 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#675E54] block">
+              {t.missions.todaysGoal}
+            </span>
+            <h2 className="text-lg font-bold text-[#102A43]">
+              Daily Habit: Finish 1 Lesson Checkpoint
+            </h2>
+            <p className="text-xs text-[#675E54]">{t.missions.todaysGoalDesc}</p>
           </div>
-          <span className="text-xs font-semibold px-3 py-1 bg-[#EDF1FC] text-[#3457D5] rounded-full border border-[#C3D2F7]">
-            Active Today
-          </span>
+
+          <div className="flex items-center gap-2 bg-[#E9DDCB] border border-[#D8CABA] px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#102A43] self-start sm:self-auto">
+            <span>⭐ +50 XP Daily Reward</span>
+          </div>
         </div>
 
-        <div className="space-y-1.5 pt-1">
-          <div className="flex items-center justify-between text-xs text-[#7E8796] font-medium">
-            <span>Progress: 1 / 1 Activity</span>
-            <span className="text-[#3457D5] font-bold">100% Complete</span>
+        {/* Goal Progress bar */}
+        <div className="space-y-1.5 pt-2">
+          <div className="flex justify-between text-xs font-semibold text-[#102A43]">
+            <span>{t.missions.weeklyProgress}</span>
+            <span>4 / 5 Days Completed</span>
           </div>
-          <div className="w-full bg-[#F8F7F4] h-2 rounded-full overflow-hidden">
-            <div className="bg-[#3457D5] h-full rounded-full w-full" />
+          <div className="w-full bg-[#E9DDCB] h-2 rounded-full overflow-hidden">
+            <div className="bg-[#102A43] h-full rounded-full w-4/5" />
           </div>
         </div>
       </div>
 
-      {/* 2. Available Challenges List */}
+      {/* 2. Available Learning Missions */}
       <div className="space-y-4">
-        <h2 className="text-base font-bold text-[#20242B]">{t.missions.availableChallenges}</h2>
+        <h2 className="text-base font-bold text-[#102A43]">
+          {t.missions.availableChallenges}
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {missions.map((mission) => {
-            const isCompleted = mission.progress >= mission.total;
-            const percentage = Math.min(100, Math.round((mission.progress / mission.total) * 100));
-
+            const isDone = mission.progress >= mission.total;
             return (
               <div
                 key={mission.id}
-                className="bg-white border border-[#EBE8E1] rounded-2xl p-5 shadow-2xs flex flex-col justify-between"
+                className="bg-[#FAF6EF] border border-[#D8CABA] hover:border-[#C9B69C] hover:bg-[#EFE5D5] rounded-2xl p-5 shadow-2xs flex flex-col justify-between transition-all space-y-4"
               >
                 <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#7E8796]">
-                      {mission.type === 'daily' && 'Daily Goal'}
-                      {mission.type === 'weekly' && 'Weekly Track'}
-                      {mission.type === 'subject' && 'Subject Milestone'}
+                  <div className="flex items-start justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#675E54] bg-[#E9DDCB] px-2 py-0.5 rounded border border-[#D8CABA]">
+                      {mission.type} Mission
                     </span>
-                    <span className="text-xs font-bold text-[#20242B] bg-[#F8F7F4] border border-[#EBE8E1] px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-[#102A43]">
                       +{mission.xpReward} XP
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-bold text-[#20242B]">
+                    <h3 className="text-base font-bold text-[#102A43]">
                       {mission.title[language]}
                     </h3>
-                    <p className="text-xs text-[#7E8796] mt-1 leading-relaxed">
+                    <p className="text-xs text-[#675E54] mt-1 leading-relaxed">
                       {mission.description[language]}
                     </p>
                   </div>
 
-                  {/* Progress bar */}
+                  {/* Progress Bar */}
                   <div className="space-y-1 pt-1">
-                    <div className="flex items-center justify-between text-[11px] text-[#7E8796] font-medium">
+                    <div className="flex justify-between text-[11px] font-medium text-[#675E54]">
                       <span>Progress</span>
                       <span>
-                        {mission.progress} of {mission.total}
+                        {mission.progress} / {mission.total}
                       </span>
                     </div>
-                    <div className="w-full bg-[#F8F7F4] h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#E9DDCB] h-1.5 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${
-                          isCompleted ? 'bg-[#3457D5]' : 'bg-[#D8D4CB]'
-                        }`}
-                        style={{ width: `${percentage}%` }}
+                        className="bg-[#102A43] h-full rounded-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            (mission.progress / mission.total) * 100
+                          )}%`,
+                        }}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-[#EBE8E1] flex items-center justify-between">
-                  {mission.badgeReward ? (
-                    <span className="text-[11px] text-[#977636] font-medium flex items-center gap-1 bg-[#FAF5ED] px-2 py-0.5 rounded-md border border-[#E8DCBE]">
-                      <Award className="w-3.5 h-3.5 text-[#C9A96E]" />
-                      {mission.badgeReward}
-                    </span>
-                  ) : (
-                    <span className="text-[11px] text-[#7E8796]">Standard Quest</span>
-                  )}
-
+                {/* Claim Button */}
+                <div className="pt-2 border-t border-[#D8CABA]">
                   {mission.isClaimed ? (
-                    <span className="text-xs font-semibold text-[#3457D5] flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-[#3457D5]" />
-                      <span>{t.missions.completed}</span>
-                    </span>
-                  ) : isCompleted ? (
+                    <div className="py-2 text-center text-xs font-semibold text-[#1E573E] bg-[#DCEFE5] rounded-xl border border-[#B6DEC9]">
+                      ✓ {t.missions.completed}
+                    </div>
+                  ) : isDone ? (
                     <button
                       onClick={() => claimMissionReward(mission.id)}
-                      className="px-3.5 py-1.5 bg-[#3457D5] hover:bg-[#2845B2] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors"
+                      className="w-full py-2 bg-[#102A43] hover:bg-[#0C1F33] active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5"
                     >
-                      {t.missions.claimReward}
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{t.missions.claimReward}</span>
                     </button>
                   ) : (
-                    <button
-                      onClick={() => setActiveLessonPackId('physics-quest')}
-                      className="px-3.5 py-1.5 text-xs text-[#4A5160] hover:text-[#20242B] font-medium flex items-center gap-1"
-                    >
-                      <span>Start Lesson</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
+                    <div className="py-2 text-center text-xs font-medium text-[#675E54] bg-[#E9DDCB] rounded-xl border border-[#D8CABA]">
+                      In Progress
+                    </div>
                   )}
                 </div>
               </div>

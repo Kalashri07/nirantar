@@ -2,50 +2,52 @@
 
 @layer base {
   :root {
-    --color-graphite: #20242b;
-    --color-royal-blue: #3457d5;
-    --color-royal-blue-hover: #2845b2;
-    --color-royal-blue-tint: #edf1fc;
-    --color-champagne: #c9a96e;
-    --color-champagne-tint: #faf5ed;
-    --color-champagne-border: #e8dcbe;
-    --color-porcelain: #f8f7f4;
-    --color-border-warm: #ebe8e1;
-    --color-border-subtle: #e2ded5;
-    --color-text-body: #4a5160;
-    --color-text-muted: #7e8796;
+    --color-bg-main: #f3ebdd;
+    --color-surface-light: #e9ddcb;
+    --color-surface-card: #f9f5ed;
+    --color-surface-card-hover: #efe5d5;
+    --color-beige-dark: #c9b69c;
+    --color-beige-dark-hover: #bfa98c;
+    --color-navy: #102a43;
+    --color-navy-hover: #0c1f33;
+    --color-navy-tint: #e2e9f0;
+    --color-border: #d8caba;
+    --color-border-subtle: #e4d8c8;
+    --color-text-primary: #102a43;
+    --color-text-secondary: #675e54;
+    --color-text-muted: #8c8275;
   }
 
   body {
-    background-color: #f8f7f4;
-    color: #20242b;
+    background-color: #f3ebdd;
+    color: #102a43;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
-  /* Friendly clean scrollbar */
+  /* Friendly warm scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #f8f7f4;
+    background: #f3ebdd;
   }
   ::-webkit-scrollbar-thumb {
-    background: #d8d4cb;
+    background: #c9b69c;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #bbb5a7;
+    background: #bfa98c;
   }
 }
 
-/* Light clean cards with warm porcelain contrast */
+/* Warm Beige cards with subtle depth */
 .app-card {
-  background-color: #ffffff;
-  border: 1px solid #ebe8e1;
-  box-shadow: 0 1px 3px 0 rgba(32, 36, 43, 0.04), 0 1px 2px -1px rgba(32, 36, 43, 0.02);
+  background-color: #f9f5ed;
+  border: 1px solid #d8caba;
+  box-shadow: 0 1px 3px 0 rgba(16, 42, 67, 0.04), 0 1px 2px -1px rgba(16, 42, 67, 0.02);
 }
 
 .app-card-hover {
@@ -54,14 +56,15 @@
 
 .app-card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -3px rgba(32, 36, 43, 0.06), 0 4px 6px -4px rgba(32, 36, 43, 0.03);
-  border-color: #d8d4cb;
+  box-shadow: 0 8px 16px -3px rgba(16, 42, 67, 0.06), 0 4px 6px -4px rgba(16, 42, 67, 0.03);
+  border-color: #c9b69c;
+  background-color: #efe5d5;
 }
 
 /* Low Data Mode Overrides */
 .low-data-mode .app-card {
   box-shadow: none !important;
-  border-color: #ebe8e1 !important;
+  border-color: #d8caba !important;
 }
 
 .low-data-mode .rich-animation {
@@ -69,9 +72,9 @@
   transition: none !important;
 }
 
-/* Shimmer gradient effect for Royal Blue progress bar */
+/* Shimmer gradient effect for Navy progress bar */
 .xp-shimmer {
-  background: linear-gradient(90deg, #3457d5 0%, #5d7ce8 50%, #3457d5 100%);
+  background: linear-gradient(90deg, #102a43 0%, #24466b 50%, #102a43 100%);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
