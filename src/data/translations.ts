@@ -28,6 +28,7 @@ export interface Translations {
     subtitle: string;
     weeklyTab: string;
     monthlyTab: string;
+    yearlyTab: string;
     allTimeTab: string;
     allSubjects: string;
     rankCol: string;
@@ -193,7 +194,8 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       subtitle: "See how you're progressing with other learners.",
       weeklyTab: "This Week",
       monthlyTab: "This Month",
-      allTimeTab: "All Time",
+      yearlyTab: "This Year",
+      allTimeTab: "This Year",
       allSubjects: "All Subjects",
       rankCol: "Rank",
       learnerCol: "Learner",
@@ -367,7 +369,8 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       subtitle: "इतर विद्यार्थ्यांच्या तुलनेत तुमची प्रगती तपासा.",
       weeklyTab: "या आठवड्यात",
       monthlyTab: "या महिन्यात",
-      allTimeTab: "सर्वकालीन",
+      yearlyTab: "या वर्षी",
+      allTimeTab: "या वर्षी",
       allSubjects: "सर्व विषय",
       rankCol: "क्रमांक",
       learnerCol: "विद्यार्थी",
@@ -541,7 +544,8 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       subtitle: "अन्य शिक्षार्थियों के साथ अपनी प्रगति देखें।",
       weeklyTab: "इस सप्ताह",
       monthlyTab: "इस महीने",
-      allTimeTab: "सर्वकालिक",
+      yearlyTab: "इस वर्ष",
+      allTimeTab: "इस वर्ष",
       allSubjects: "सभी विषय",
       rankCol: "रैंक",
       learnerCol: "शिक्षार्थी",

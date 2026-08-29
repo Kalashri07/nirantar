@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Trophy,
   Flame,
@@ -12,31 +12,90 @@ import {
   Swords,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { mockLeaderboardLearners } from '../data/mockLeaderboardData';
+import {
+  mockLeaderboardLearners,
+  getLearnerPeriodMetrics,
+  LeaderboardTimePeriod,
+} from '../data/mockLeaderboardData';
 
 export const LeaderboardView: React.FC = () => {
   const { userProfile, language, t, setCurrentNav } = useApp();
-  const [timeFilter, setTimeFilter] = useState<'week' | 'month' | 'all'>('week');
-  const [subjectFilter, setSubjectFilter] = useState<string>('all');
+  const [timeFilter, setTimeFilter] = useState<LeaderboardTimePeriod>('week');
 
-  // Dynamic user data in leaderboard
-  const learners = mockLeaderboardLearners.map((lrn) => {
-    if (lrn.isCurrentUser) {
+  // Dynamic date-based calculations for the selected time period
+  const { rankedLearners, currentUserRank, currentUserScore, targetLearner, xpNeeded, progressPercent } = useMemo(() => {
+    // 1. Calculate metrics for all learners for the selected period
+    const computedLearners = mockLeaderboardLearners.map((lrn) => {
+      if (lrn.isCurrentUser) {
+        // Compute active user's period XP proportionally based on their live profile XP
+        let userPeriodXp = userProfile.currentXp;
+        let userPeriodMissions = Math.max(1, userProfile.offlineActivitiesCompleted);
+
+        if (timeFilter === 'week') {
+          userPeriodXp = Math.min(
+            userProfile.currentXp,
+            Math.round(userProfile.currentXp * 0.23) + (userProfile.offlineActivitiesCompleted * 20) + 40
+          );
+          userPeriodMissions = Math.max(2, Math.round(userProfile.offlineActivitiesCompleted * 0.4) + 2);
+        } else if (timeFilter === 'month') {
+          userPeriodXp = Math.min(
+            userProfile.currentXp,
+            Math.round(userProfile.currentXp * 0.68) + (userProfile.offlineActivitiesCompleted * 30) + 70
+          );
+          userPeriodMissions = Math.max(4, Math.round(userProfile.offlineActivitiesCompleted * 0.7) + 3);
+        }
+
+        return {
+          ...lrn,
+          name: `${userProfile.name} (You)`,
+          xp: userPeriodXp,
+          level: userProfile.level,
+          missionsCompleted: userPeriodMissions,
+          streakDays: userProfile.streakDays,
+        };
+      }
+
+      const metrics = getLearnerPeriodMetrics(lrn, timeFilter);
       return {
         ...lrn,
-        name: `${userProfile.name} (You)`,
-        xp: userProfile.currentXp,
-        level: userProfile.level,
-        missionsCompleted: Math.max(8, userProfile.offlineActivitiesCompleted),
-        streakDays: userProfile.streakDays,
+        xp: metrics.xp,
+        missionsCompleted: metrics.missionsCompleted,
       };
-    }
-    return lrn;
-  });
+    });
 
-  // Calculate points needed to overtake #3 (Rohan: 1940 XP)
-  const rank3Xp = 1940;
-  const xpNeeded = Math.max(0, rank3Xp - userProfile.currentXp + 20);
+    // 2. Sort learners strictly by XP earned in this period descending
+    computedLearners.sort((a, b) => b.xp - a.xp);
+
+    // 3. Re-assign ranks based on sorted order
+    const ranked = computedLearners.map((lrn, index) => ({
+      ...lrn,
+      rank: index + 1,
+    }));
+
+    // 4. Determine user's standing and targets
+    const userIndex = ranked.findIndex((l) => l.isCurrentUser);
+    const userRank = userIndex >= 0 ? userIndex + 1 : 4;
+    const userScore = userIndex >= 0 ? ranked[userIndex].xp : userProfile.currentXp;
+
+    let target = null;
+    let needed = 0;
+    let percent = 100;
+
+    if (userIndex > 0) {
+      target = ranked[userIndex - 1];
+      needed = Math.max(0, target.xp - userScore + 10);
+      percent = Math.min(100, Math.round((userScore / target.xp) * 100));
+    }
+
+    return {
+      rankedLearners: ranked,
+      currentUserRank: userRank,
+      currentUserScore: userScore,
+      targetLearner: target,
+      xpNeeded: needed,
+      progressPercent: percent,
+    };
+  }, [timeFilter, userProfile]);
 
   const getRankBadge = (rank: number) => {
     switch (rank) {
@@ -66,14 +125,14 @@ export const LeaderboardView: React.FC = () => {
         {/* Quick link to Personal Challenges */}
         <button
           onClick={() => setCurrentNav('challenges')}
-          className="self-start sm:self-center px-4 py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] border border-[#D8CABA] text-[#102A43] rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-2xs"
+          className="self-start sm:self-center px-4 py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] border border-[#D8CABA] text-[#102A43] rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-2xs cursor-pointer"
         >
           <Swords className="w-4 h-4 text-[#102A43]" />
           <span>Challenge a Friend →</span>
         </button>
       </div>
 
-      {/* 1. YOUR POSITION CARD (MOVED TO TOP) */}
+      {/* 1. YOUR POSITION CARD */}
       <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -85,7 +144,7 @@ export const LeaderboardView: React.FC = () => {
                 {t.leaderboard.yourPositionTitle}
               </span>
               <h2 className="text-lg font-bold text-[#102A43]">
-                {t.leaderboard.yourRank} #4 · {userProfile.name}
+                {t.leaderboard.yourRank} #{currentUserRank} · {userProfile.name}
               </h2>
             </div>
           </div>
@@ -94,7 +153,7 @@ export const LeaderboardView: React.FC = () => {
             <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
               <span className="text-[10px] text-[#675E54] block">Your Score</span>
               <span className="font-bold text-[#102A43] text-sm">
-                ⭐ {userProfile.currentXp.toLocaleString()} XP
+                ⭐ {currentUserScore.toLocaleString()} XP
               </span>
             </div>
             <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
@@ -109,59 +168,47 @@ export const LeaderboardView: React.FC = () => {
         {/* Progress towards next rank */}
         <div className="space-y-1.5 pt-2 border-t border-[#D8CABA]">
           <div className="flex justify-between text-xs text-[#675E54]">
-            <span>{t.leaderboard.pointsNeeded} #3 (Rohan)</span>
-            <span className="font-bold text-[#102A43]">{xpNeeded} XP needed</span>
+            {targetLearner ? (
+              <>
+                <span>
+                  {t.leaderboard.pointsNeeded} #{targetLearner.rank} ({targetLearner.name.replace(' (You)', '')})
+                </span>
+                <span className="font-bold text-[#102A43]">{xpNeeded} XP needed</span>
+              </>
+            ) : (
+              <span className="font-bold text-[#1E573E]">
+                👑 You are in 1st Place for {timeFilter === 'week' ? 'this week' : timeFilter === 'month' ? 'this month' : 'this year'}!
+              </span>
+            )}
           </div>
           <div className="w-full bg-[#E9DDCB] h-2 rounded-full overflow-hidden">
             <div
               className="bg-[#102A43] h-full rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, Math.round((userProfile.currentXp / rank3Xp) * 100))}%` }}
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
       </div>
 
-      {/* 2. Filter Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[#FAF6EF] border border-[#D8CABA] p-3 rounded-2xl shadow-2xs">
-        {/* Time Tabs */}
+      {/* 2. Filter Controls (Time-Period Only: This Week | This Month | This Year) */}
+      <div className="flex items-center bg-[#FAF6EF] border border-[#D8CABA] p-3 rounded-2xl shadow-2xs">
         <div className="flex items-center bg-[#E9DDCB] border border-[#D8CABA] p-1 rounded-xl">
           {[
             { id: 'week' as const, label: t.leaderboard.weeklyTab },
             { id: 'month' as const, label: t.leaderboard.monthlyTab },
-            { id: 'all' as const, label: t.leaderboard.allTimeTab },
+            { id: 'year' as const, label: t.leaderboard.yearlyTab || 'This Year' },
           ].map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setTimeFilter(tab.id)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 timeFilter === tab.id
                   ? 'bg-[#102A43] text-white font-bold shadow-2xs'
                   : 'text-[#675E54] hover:text-[#102A43]'
               }`}
             >
               {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Subject Filter Pills */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {[
-            { id: 'all', label: t.leaderboard.allSubjects },
-            { id: 'science', label: 'Science' },
-            { id: 'math', label: 'Mathematics' },
-            { id: 'tech', label: 'Technology' },
-          ].map((sub) => (
-            <button
-              key={sub.id}
-              onClick={() => setSubjectFilter(sub.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                subjectFilter === sub.id
-                  ? 'bg-[#102A43] text-white font-semibold'
-                  : 'bg-[#E9DDCB] border border-[#D8CABA] text-[#675E54] hover:bg-[#E2D4BF]'
-              }`}
-            >
-              {sub.label}
             </button>
           ))}
         </div>
@@ -178,7 +225,7 @@ export const LeaderboardView: React.FC = () => {
         </div>
 
         <div className="divide-y divide-[#D8CABA]">
-          {learners.map((learner) => {
+          {rankedLearners.map((learner) => {
             const isMe = learner.isCurrentUser;
             return (
               <div
@@ -208,7 +255,7 @@ export const LeaderboardView: React.FC = () => {
                     {learner.avatar}
                   </div>
                   <div>
-                    <span className={`text-sm font-bold block ${isMe ? 'text-[#102A43]' : 'text-[#102A43]'}`}>
+                    <span className="text-sm font-bold block text-[#102A43]">
                       {learner.name}
                     </span>
                     <span className="text-[11px] text-[#675E54] flex items-center gap-1 sm:hidden">

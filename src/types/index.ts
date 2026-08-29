@@ -6,6 +6,12 @@ export type LearnerType = 'school' | 'undergrad';
 
 export type NavSection = 'home' | 'learn' | 'library' | 'missions' | 'achievements' | 'leaderboard' | 'challenges' | 'profile';
 
+export interface LearnerActivity {
+  date: string;
+  xp: number;
+  missions: number;
+}
+
 export interface LeaderboardLearner {
   id: string;
   rank: number;
@@ -17,6 +23,10 @@ export interface LeaderboardLearner {
   streakDays: number;
   isCurrentUser?: boolean;
   subject: string;
+  weeklyXp?: number;
+  monthlyXp?: number;
+  yearlyXp?: number;
+  activities?: LearnerActivity[];
 }
 
 export interface FriendChallenge {
