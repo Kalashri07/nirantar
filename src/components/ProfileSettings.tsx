@@ -17,6 +17,7 @@ export const ProfileSettings: React.FC = () => {
     setLanguage,
     pendingSyncQueue,
     resetAllDemoState,
+    logoutUser,
     t,
   } = useApp();
 
@@ -56,6 +57,17 @@ export const ProfileSettings: React.FC = () => {
             </span>
           </div>
         </div>
+
+        <button
+          onClick={() => {
+            if (window.confirm('Log out of Nirantar?')) {
+              logoutUser();
+            }
+          }}
+          className="px-4 py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] text-[#102A43] text-xs font-bold rounded-xl border border-[#D8CABA] transition-colors self-start sm:self-auto cursor-pointer"
+        >
+          Log Out
+        </button>
       </div>
 
       {/* 2. Education Level & Language Preferences */}

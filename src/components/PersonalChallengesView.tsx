@@ -363,7 +363,7 @@ export const PersonalChallengesView: React.FC = () => {
         <h2 className="text-base font-bold text-[#102A43]">{t.challenges.prevChallenges}</h2>
 
         <div className="divide-y divide-[#D8CABA] bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl overflow-hidden shadow-2xs">
-          {challengeHistory.map((hist) => (
+          {challengeHistory.map((hist: { id: string; friendName: string; userXp: number; friendXp: number; winner: string; date: string; subject: string }) => (
             <div
               key={hist.id}
               className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#EFE5D5] transition-colors"

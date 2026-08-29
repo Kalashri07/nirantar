@@ -144,6 +144,24 @@ export interface Translations {
     completedDesc: string;
     backToCourse: string;
   };
+  login: {
+    title: string;
+    subtitle: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    passwordLabel: string;
+    passwordPlaceholder: string;
+    loginBtn: string;
+    forgotPassword: string;
+    newToApp: string;
+    createAccount: string;
+    demoAccountTitle: string;
+    demoBtn: string;
+    offlineTitle: string;
+    offlineDesc: string;
+    continueOfflineBtn: string;
+    firstTimeOfflineError: string;
+  };
 }
 
 export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
@@ -293,6 +311,24 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       completedDesc: "You have completed all interactive checkpoints for this lesson.",
       backToCourse: "Back to Dashboard",
     },
+    login: {
+      title: "Welcome to Nirantar",
+      subtitle: "Learning that continues, even when connectivity doesn't.",
+      emailLabel: "Email / Username",
+      emailPlaceholder: "Enter your email or username",
+      passwordLabel: "Password",
+      passwordPlaceholder: "Enter your password",
+      loginBtn: "Login",
+      forgotPassword: "Forgot Password?",
+      newToApp: "Don't have an account?",
+      createAccount: "Create Account",
+      demoAccountTitle: "Demo Account",
+      demoBtn: "Login with Demo Account",
+      offlineTitle: "Offline",
+      offlineDesc: "You can continue using your saved learning data offline.",
+      continueOfflineBtn: "Continue Offline",
+      firstTimeOfflineError: "First-time login requires an internet connection.",
+    },
   },
   mr: {
     appName: "निरंतर",
@@ -440,6 +476,24 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       completedDesc: "तुम्ही या धड्यातील सर्व टप्पे यशस्वीरित्या पूर्ण केले आहेत.",
       backToCourse: "डॅशबोर्डवर परत जा",
     },
+    login: {
+      title: "निरंतर मध्ये आपले स्वागत आहे",
+      subtitle: "इंटरनेट नसले तरी अखंड चालू राहणारे शिक्षण.",
+      emailLabel: "ईमेल / युझरनेम",
+      emailPlaceholder: "तुमचा ईमेल किंवा युझरनेम प्रविष्ट करा",
+      passwordLabel: "पासवर्ड",
+      passwordPlaceholder: "तुमचा पासवर्ड प्रविष्ट करा",
+      loginBtn: "लॉगिन करा",
+      forgotPassword: "पासवर्ड विसरलात?",
+      newToApp: "खाते नाही का?",
+      createAccount: "नवीन खाते तयार करा",
+      demoAccountTitle: "डेमो खाते",
+      demoBtn: "डेमो खात्यासह लॉगिन करा",
+      offlineTitle: "ऑफलाइन",
+      offlineDesc: "तुम्ही तुमचा साठवलेला डेटा ऑफलाइन वापरणे चालू ठेवू शकता.",
+      continueOfflineBtn: "ऑफलाइन सुरू ठेवा",
+      firstTimeOfflineError: "पहिल्यांदा लॉगिन करण्यासाठी इंटरनेट कनेक्शन आवश्यक आहे.",
+    },
   },
   hi: {
     appName: "निरंतर",
@@ -586,6 +640,24 @@ export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
       completedTitle: "चेकपॉइंट पूरा हुआ!",
       completedDesc: "आपने इस पाठ के सभी इंटरैक्टिव चेकपॉइंट सफलतापूर्वक पूरे कर लिए हैं।",
       backToCourse: "डैशबोर्ड पर वापस जाएं",
+    },
+    login: {
+      title: "निरंतर में आपका स्वागत है",
+      subtitle: "इंटरनेट के बिना भी निरंतर जारी रहने वाली शिक्षा।",
+      emailLabel: "ईमेल / उपयोगकर्ता नाम",
+      emailPlaceholder: "अपना ईमेल या उपयोगकर्ता नाम दर्ज करें",
+      passwordLabel: "पासवर्ड",
+      passwordPlaceholder: "अपना पासवर्ड दर्ज करें",
+      loginBtn: "लॉग इन करें",
+      forgotPassword: "पासवर्ड भूल गए?",
+      newToApp: "खाता नहीं है?",
+      createAccount: "नया खाता बनाएं",
+      demoAccountTitle: "डेमो खाता",
+      demoBtn: "डेमो खाते से लॉग इन करें",
+      offlineTitle: "ऑफलाइन",
+      offlineDesc: "आप अपने सहेजे गए शिक्षण डेटा का ऑफलाइन उपयोग जारी रख सकते हैं।",
+      continueOfflineBtn: "ऑफलाइन जारी रखें",
+      firstTimeOfflineError: "पहली बार लॉगिन करने के लिए इंटरनेट कनेक्शन आवश्यक है।",
     },
   },
 };

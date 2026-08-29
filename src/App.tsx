@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from './context/AppContext';
+import { LoginPage } from './components/LoginPage';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -49,5 +50,11 @@ export const MainLayout: React.FC = () => {
 };
 
 export default function App() {
+  const { isAuthenticated } = useApp();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
   return <MainLayout />;
 }

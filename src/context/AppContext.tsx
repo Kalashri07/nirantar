@@ -54,6 +54,11 @@ interface AppContextType {
   startFriendChallenge: (friendName: string, subjectType: string, durationDays: number) => void;
   completeActiveChallenge: () => void;
   claimChallengeBonusXp: () => void;
+  // Auth state
+  isAuthenticated: boolean;
+  hasPreviouslyLoggedIn: boolean;
+  loginUser: (userNameOrEmail?: string) => void;
+  logoutUser: () => void;
   currentNav: string;
   setCurrentNav: (nav: string) => void;
   resetAllDemoState: () => void;
@@ -62,6 +67,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
+  AUTH: 'nirantar_auth_v2',
+  HAS_LOGGED_IN: 'nirantar_has_logged_in_v2',
   PROFILE: 'nirantar_user_profile_v2',
   PACKS: 'nirantar_packs_v2',
   SYNC_QUEUE: 'nirantar_pending_sync_v2',
@@ -141,6 +148,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(STORAGE_KEYS.CHALLENGE_HIST);
     return saved ? JSON.parse(saved) : mockChallengeHistory;
   });
+
+  // 8. Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.AUTH);
+    return saved === 'true';
+  });
+
+  const [hasPreviouslyLoggedIn, setHasPreviouslyLoggedIn] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.HAS_LOGGED_IN);
+    return saved === 'true';
+  });
+
+  const loginUser = (userNameOrEmail?: string) => {
+    setIsAuthenticated(true);
+    setHasPreviouslyLoggedIn(true);
+    localStorage.setItem(STORAGE_KEYS.AUTH, 'true');
+    localStorage.setItem(STORAGE_KEYS.HAS_LOGGED_IN, 'true');
+    if (userNameOrEmail && userNameOrEmail.trim().length > 0) {
+      const cleanName = userNameOrEmail.split('@')[0];
+      setUserProfile((prev) => ({
+        ...prev,
+        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+      }));
+    }
+  };
+
+  const logoutUser = () => {
+    setIsAuthenticated(false);
+    localStorage.setItem(STORAGE_KEYS.AUTH, 'false');
+  };
 
   // Sync state animations
   const [isSyncing, setIsSyncing] = useState(false);
@@ -566,6 +603,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         startFriendChallenge,
         completeActiveChallenge,
         claimChallengeBonusXp,
+        isAuthenticated,
+        hasPreviouslyLoggedIn,
+        loginUser,
+        logoutUser,
         currentNav,
         setCurrentNav,
         resetAllDemoState,
