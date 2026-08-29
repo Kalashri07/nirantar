@@ -26,6 +26,7 @@ export const LessonWorkspace: React.FC = () => {
     userProfile,
     recordStepCompletion,
     triggerCelebration,
+    t,
   } = useApp();
 
   const pack = learningPacks.find((p) => p.id === activeLessonPackId);
@@ -476,11 +477,11 @@ export const LessonWorkspace: React.FC = () => {
                           const isSelected = selectedOptionId === opt.id;
                           let style = 'bg-[#FAF6EF] border-[#D8CABA] text-[#102A43] hover:bg-[#EFE5D5]';
 
-                          if (hasSubmitted || isCurrentModuleDone) {
-                            if (opt.isCorrect) {
+                          if (hasSubmitted) {
+                            if (isSelected && opt.isCorrect) {
                               style = 'bg-[#DCEFE5] border-[#2D7A58] text-[#1E573E] font-semibold';
                             } else if (isSelected && !opt.isCorrect) {
-                              style = 'bg-[#F9E2E2] border-[#EBB6B6] text-[#782323]';
+                              style = 'bg-[#F9E2E2] border-[#EBB6B6] text-[#782323] font-medium';
                             }
                           } else if (isSelected) {
                             style = 'bg-[#E9DDCB] border-[#102A43] text-[#102A43] font-semibold ring-1 ring-[#102A43]';
@@ -494,7 +495,7 @@ export const LessonWorkspace: React.FC = () => {
                               className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between cursor-pointer ${style}`}
                             >
                               <span>{opt.text[language]}</span>
-                              {(hasSubmitted || isCurrentModuleDone) && opt.isCorrect && (
+                              {hasSubmitted && isSelected && opt.isCorrect && (
                                 <CheckCircle2 className="w-4 h-4 text-[#1E573E] flex-shrink-0" />
                               )}
                             </button>
@@ -502,7 +503,7 @@ export const LessonWorkspace: React.FC = () => {
                         })}
                       </div>
 
-                      {/* Feedback banner */}
+                      {/* Feedback banner (shown only after explicit submit) */}
                       {hasSubmitted && selectedOptionId && (
                         <div
                           className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
@@ -512,7 +513,9 @@ export const LessonWorkspace: React.FC = () => {
                           }`}
                         >
                           <span className="font-bold block mb-0.5">
-                            {isCurrentModuleDone ? '✓ Correct Answer! +XP Saved' : '⚠️ Try again'}
+                            {isCurrentModuleDone
+                              ? t.lesson.correctNotification
+                              : t.lesson.tryAgainNotification}
                           </span>
                           <span>
                             {
@@ -544,7 +547,7 @@ export const LessonWorkspace: React.FC = () => {
                           disabled={currentModule.hasQuestion && !selectedOptionId}
                           className="w-full sm:w-auto px-6 py-2.5 bg-[#102A43] hover:bg-[#0C1F33] disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
                         >
-                          {currentModule.hasQuestion ? 'Check Answer & Earn XP' : 'Mark Checkpoint Complete →'}
+                          {currentModule.hasQuestion ? t.lesson.checkAnswer : 'Mark Checkpoint Complete →'}
                         </button>
                       ) : (
                         <button
@@ -553,8 +556,8 @@ export const LessonWorkspace: React.FC = () => {
                         >
                           <span>
                             {currentModuleIndex === totalModules - 1
-                              ? 'Finish Lesson →'
-                              : 'Next Checkpoint →'}
+                              ? t.lesson.finishLesson
+                              : t.lesson.nextCheckpoint}
                           </span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
