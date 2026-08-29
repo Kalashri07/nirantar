@@ -27,14 +27,14 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-150 max-w-4xl mx-auto py-2">
-      {/* 1. FRIENDLY GREETING & SUBTLE STATUS */}
+      {/* 1. PRODUCT HEADER & SUBTLE STATUS */}
       <div className="flex flex-col sm:flex-row items-start sm:items-baseline justify-between gap-2">
         <div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Good Morning, {userProfile.name} 👋
+            {t.dashboard.greeting}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Ready to continue your lessons today?
+            {t.dashboard.greetingSubtitle}
           </p>
         </div>
 

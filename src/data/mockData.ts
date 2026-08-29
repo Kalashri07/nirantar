@@ -1,7 +1,7 @@
 import type { LearningPack, MissionItem, BadgeItem, UserProfile } from '../types';
 
 export const initialUserProfile: UserProfile = {
-  name: "Kala",
+  name: "Learner",
   learnerType: "school",
   gradeOrStream: "Class 10",
   interests: ["Science", "Programming", "Physics"],
@@ -541,9 +541,9 @@ export const learningPacks: LearningPack[] = [
             {
               id: "e-opt-1",
               text: {
-                en: "Good morning! My name is Kala, and today I am presenting our offline learning innovation.",
-                mr: "Good morning! My name is Kala, and today I am presenting our offline learning innovation.",
-                hi: "Good morning! My name is Kala, and today I am presenting our offline learning innovation."
+                en: "Good morning! Today I am presenting our offline learning project innovation.",
+                mr: "Good morning! Today I am presenting our offline learning project innovation.",
+                hi: "Good morning! Today I am presenting our offline learning project innovation."
               },
               isCorrect: true,
               explanation: {
@@ -555,9 +555,9 @@ export const learningPacks: LearningPack[] = [
             {
               id: "e-opt-2",
               text: {
-                en: "Myself Kala coming from Kopargaon college.",
-                mr: "Myself Kala coming from Kopargaon college.",
-                hi: "Myself Kala coming from标志 college."
+                en: "Myself student coming from Kopargaon college.",
+                mr: "Myself student coming from Kopargaon college.",
+                hi: "Myself student coming from Kopargaon college."
               },
               isCorrect: false,
               explanation: {

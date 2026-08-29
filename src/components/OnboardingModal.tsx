@@ -31,7 +31,7 @@ export const OnboardingModal: React.FC = () => {
   const [gradeOrStream, setGradeOrStream] = useState(userProfile.gradeOrStream || 'Class 10');
   const [selectedLang, setSelectedLang] = useState<Language>(userProfile.preferredLanguage || 'en');
   const [interests, setInterests] = useState<string[]>(userProfile.interests || ['Science', 'Physics']);
-  const [name, setName] = useState(userProfile.name || 'Kala');
+  const [name, setName] = useState(userProfile.name || 'Student');
 
   if (!isOnboardingOpen) return null;
 

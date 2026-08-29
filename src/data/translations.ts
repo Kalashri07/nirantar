@@ -34,6 +34,7 @@ export interface Translations {
   };
   dashboard: {
     greeting: string;
+    greetingSubtitle: string;
     levelLabel: string;
     xpProgress: string;
     streakLabel: string;
@@ -185,7 +186,8 @@ export const translations: Record<Language, Translations> = {
       offlineReady: "Ready for Offline Learning",
     },
     dashboard: {
-      greeting: "Good Morning, Kala 👋",
+      greeting: "Welcome to Nirantar 👋",
+      greetingSubtitle: "Learning that continues, even when connectivity doesn't.",
       levelLabel: "Current Level",
       xpProgress: "XP Progress",
       streakLabel: "Day Streak",
@@ -335,7 +337,8 @@ export const translations: Record<Language, Translations> = {
       offlineReady: "ऑफलाइन शिक्षणासाठी तयार",
     },
     dashboard: {
-      greeting: "शुभ प्रभात, कला 👋",
+      greeting: "निरंतर मध्ये आपले स्वागत आहे 👋",
+      greetingSubtitle: "इंटरनेट नसले तरी अखंड चालू राहणारे शिक्षण.",
       levelLabel: "सध्याची पातळी",
       xpProgress: "XP प्रगती",
       streakLabel: "दिवसांची मालिका (Streak)",
@@ -485,7 +488,8 @@ export const translations: Record<Language, Translations> = {
       offlineReady: "ऑफलाइन सीखने के लिए तैयार",
     },
     dashboard: {
-      greeting: "शुभ प्रभात, कला 👋",
+      greeting: "निरंतर में आपका स्वागत है 👋",
+      greetingSubtitle: "इंटरनेट के बिना भी निरंतर जारी रहने वाली शिक्षा।",
       levelLabel: "वर्तमान स्तर",
       xpProgress: "XP प्रगति",
       streakLabel: "दिनों का स्ट्रीक",
