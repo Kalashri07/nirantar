@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  AlertCircle,
-  Play,
-  RotateCcw,
   Award,
   BookOpen,
   WifiOff,
-  Zap,
-  FlaskConical,
-  Code2,
-  ShieldCheck,
+  Flame,
+  Star,
+  Layers,
+  Sparkles,
   X,
+  RotateCcw,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import type { InteractiveStep } from '../types';
+import { detailedLessons, WrittenModuleStep } from '../data/lessonModulesData';
 
 export const LessonWorkspace: React.FC = () => {
   const {
@@ -24,418 +22,473 @@ export const LessonWorkspace: React.FC = () => {
     setActiveLessonPackId,
     learningPacks,
     language,
-    t,
     connectivityMode,
+    userProfile,
     recordStepCompletion,
     triggerCelebration,
   } = useApp();
 
   const pack = learningPacks.find((p) => p.id === activeLessonPackId);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const lessonData = activeLessonPackId ? detailedLessons[activeLessonPackId] : undefined;
+
+  // Active Tab: 'lesson' | 'gamification'
+  const [activeTab, setActiveTab] = useState<'lesson' | 'gamification'>('lesson');
+
+  // Step state
+  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [stepCompleted, setStepCompleted] = useState(false);
+  const [moduleCompletedMap, setModuleCompletedMap] = useState<Record<number, boolean>>({});
   const [isFinished, setIsFinished] = useState(false);
 
-  // 1. Force Simulation State
-  const [appliedBrakingForce, setAppliedBrakingForce] = useState(360);
-  const [cartSimulating, setCartSimulating] = useState(false);
-  const [cartStoppedDistance, setCartStoppedDistance] = useState<number | null>(null);
+  // Initialize completion state from pack's syllabus or fresh
+  useEffect(() => {
+    if (pack) {
+      const initialMap: Record<number, boolean> = {};
+      pack.syllabus.forEach((s, idx) => {
+        if (s.completed) initialMap[idx] = true;
+      });
+      setModuleCompletedMap(initialMap);
+      setCurrentModuleIndex(0);
+      setIsFinished(false);
+      setActiveTab('lesson');
+      setSelectedOptionId(null);
+      setHasSubmitted(false);
+    }
+  }, [activeLessonPackId, pack]);
 
-  // 2. Python Code Editor State
-  const [codeContent, setCodeContent] = useState<string>(() => {
-    return `# Sensor Data Aggregator\nreadings = [28, 31, 29, 30, 32]\ntotal = 0\nfor temp in readings:\n    total += temp\n\naverage = total / len(readings)\nprint(f"Average: {average} C")`;
-  });
-  const [codeOutput, setCodeOutput] = useState<string | null>(null);
-  const [codeSuccess, setCodeSuccess] = useState<boolean | null>(null);
+  if (!activeLessonPackId || !pack || !lessonData) return null;
 
-  // 3. Chemistry Reagent Mixer State
-  const [selectedReagent, setSelectedReagent] = useState<string | null>(null);
-  const [reactionNote, setReactionNote] = useState<string | null>(null);
+  const currentModule: WrittenModuleStep | undefined = lessonData.modules[currentModuleIndex];
+  const totalModules = lessonData.modules.length;
+  const completedCount = Object.values(moduleCompletedMap).filter(Boolean).length;
+  const progressPct = Math.round((completedCount / totalModules) * 100);
 
-  if (!activeLessonPackId || !pack) return null;
-
-  const mission = pack.interactiveMission;
-  const currentStep: InteractiveStep | undefined = mission.steps[currentStepIndex];
+  const isCurrentModuleDone = !!moduleCompletedMap[currentModuleIndex];
+  const isOffline = connectivityMode === 'offline';
 
   const handleSelectOption = (optId: string) => {
-    if (hasSubmitted && stepCompleted) return;
+    if (hasSubmitted && isCurrentModuleDone) return;
     setSelectedOptionId(optId);
     setHasSubmitted(false);
   };
 
   const handleVerifyAnswer = () => {
-    if (!selectedOptionId || !currentStep?.options) return;
-    const option = currentStep.options.find((o) => o.id === selectedOptionId);
-    setHasSubmitted(true);
+    if (!currentModule) return;
 
-    if (option?.isCorrect) {
-      setStepCompleted(true);
+    if (!currentModule.hasQuestion) {
+      // Mark as complete directly
+      setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
       triggerCelebration();
       recordStepCompletion(
         pack.id,
-        currentStep.id,
-        currentStep.xpReward,
-        currentStep.title[language]
+        currentModule.id,
+        currentModule.xpReward,
+        currentModule.title[language]
+      );
+      return;
+    }
+
+    if (!selectedOptionId || !currentModule.options) return;
+    const option = currentModule.options.find((o) => o.id === selectedOptionId);
+    setHasSubmitted(true);
+
+    if (option?.isCorrect) {
+      setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
+      triggerCelebration();
+      recordStepCompletion(
+        pack.id,
+        currentModule.id,
+        currentModule.xpReward,
+        currentModule.title[language]
       );
     }
   };
 
-  const handleNext = () => {
-    if (currentStepIndex < mission.steps.length - 1) {
-      setCurrentStepIndex((prev) => prev + 1);
+  const handleNextModule = () => {
+    if (currentModuleIndex < totalModules - 1) {
+      setCurrentModuleIndex((prev) => prev + 1);
       setSelectedOptionId(null);
       setHasSubmitted(false);
-      setStepCompleted(false);
     } else {
       setIsFinished(true);
       triggerCelebration();
     }
   };
 
-  const handlePrev = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex((prev) => prev - 1);
+  const handlePrevModule = () => {
+    if (currentModuleIndex > 0) {
+      setCurrentModuleIndex((prev) => prev - 1);
       setSelectedOptionId(null);
       setHasSubmitted(false);
-      setStepCompleted(false);
     }
   };
 
-  // Run Force Sim
-  const handleTestBraking = () => {
-    setCartSimulating(true);
-    setTimeout(() => {
-      setCartSimulating(false);
-      const stopDist = Math.round((150 * 12 * 12) / (2 * appliedBrakingForce));
-      setCartStoppedDistance(stopDist);
-    }, 700);
-  };
-
-  // Run Python Code
-  const handleRunPython = () => {
-    if (codeContent.includes('total += temp') || codeContent.includes('total = total + temp')) {
-      setCodeSuccess(true);
-      setCodeOutput('>>> Output: Average Temp = 30.0 °C\n>>> Status: All tests passed successfully.');
-      triggerCelebration();
-    } else {
-      setCodeSuccess(false);
-      setCodeOutput('>>> Error: Accumulator is overwriting total.\n>>> Hint: Use `total += temp`');
-    }
-  };
+  // Gamification earned XP calculation
+  const earnedXp = lessonData.modules.reduce((sum, m, idx) => {
+    return moduleCompletedMap[idx] ? sum + m.xpReward : sum;
+  }, 0);
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-100">
-      <div className="bg-white w-full max-w-5xl rounded-2xl border border-slate-200 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-        {/* Top Header Bar */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-4 bg-slate-50/50">
-          <div className="flex items-center gap-3">
+    <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-100">
+      <div className="bg-[#f8fafc] w-full max-w-4xl rounded-2xl border border-slate-200 shadow-2xl flex flex-col max-h-[95vh] overflow-hidden">
+        
+        {/* =========================================================
+            1. TOP HEADER & METADATA BAR
+           ========================================================= */}
+        <header className="bg-white px-5 py-3.5 border-b border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sticky top-0 z-10">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setActiveLessonPackId(null)}
-              className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors"
-              title="Close lesson"
+              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors flex-shrink-0"
+              title="Return to Courses"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <div>
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                {pack.subjectName?.[language] || pack.worldId}
-              </span>
-              <h2 className="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  {pack.subjectName?.[language] || pack.worldId}
+                </span>
+                <span className="text-slate-300">•</span>
+                <span className="text-xs font-semibold text-indigo-700">
+                  Progress: {progressPct}%
+                </span>
+                <span className="text-slate-300">•</span>
+                {isOffline ? (
+                  <span className="text-[11px] font-semibold text-rose-700 flex items-center gap-1 bg-rose-50 px-2 py-0.5 rounded">
+                    🔴 Offline
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded">
+                    Offline Ready ✓
+                  </span>
+                )}
+              </div>
+              <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                 {pack.title[language]}
-              </h2>
+              </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {connectivityMode === 'offline' && (
-              <span className="text-[11px] font-medium text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-md flex items-center gap-1">
-                <WifiOff className="w-3 h-3" /> Offline Mode
-              </span>
-            )}
+          {/* TAB NAVIGATION: 📖 LESSON vs 🎮 GAMIFICATION */}
+          <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+            <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200/80">
+              <button
+                onClick={() => setActiveTab('lesson')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'lesson'
+                    ? 'bg-white text-indigo-700 shadow-2xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📖</span>
+                <span>LESSON</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('gamification')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'gamification'
+                    ? 'bg-white text-indigo-700 shadow-2xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🎮</span>
+                <span>GAMIFICATION</span>
+              </button>
+            </div>
+
             <button
               onClick={() => setActiveLessonPackId(null)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* COMPLETED SCREEN */}
-        {isFinished ? (
-          <div className="p-8 sm:p-12 text-center space-y-6 max-w-md mx-auto my-auto">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 mx-auto flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-
-            <div>
-              <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider">
-                {t.lesson.completedTitle}
-              </span>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">
-                {mission.title[language]}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2">
-                {t.lesson.completedDesc}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[11px] text-slate-400 block font-medium">Points Earned</span>
-                <span className="text-lg font-bold text-indigo-700">+{pack.xpReward} XP</span>
+        {/* =========================================================
+            2. MAIN CONTENT BODY
+           ========================================================= */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          
+          {/* SCREEN A: MISSION COMPLETE CELEBRATION */}
+          {isFinished ? (
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-8 sm:p-12 text-center space-y-6 max-w-lg mx-auto shadow-2xs">
+              <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-700 mx-auto flex items-center justify-center shadow-xs">
+                <CheckCircle2 className="w-8 h-8" />
               </div>
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[11px] text-slate-400 block font-medium">Badge Awarded</span>
-                <span className="text-xs font-bold text-slate-800 flex items-center justify-center gap-1 mt-1">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  {mission.badgeReward}
+
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider">
+                  🎉 MISSION COMPLETE
                 </span>
+                <h2 className="text-2xl font-bold text-slate-900">
+                  {pack.title[language]}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  You have successfully finished all learning checkpoints!
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                  <span className="text-[11px] text-slate-400 block font-medium">XP Reward</span>
+                  <span className="text-xl font-bold text-indigo-700">+{lessonData.totalXp} XP</span>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                  <span className="text-[11px] text-slate-400 block font-medium">Badge Awarded</span>
+                  <span className="text-xs font-bold text-slate-800 flex items-center justify-center gap-1 mt-1">
+                    <Award className="w-4 h-4 text-amber-500" />
+                    {lessonData.badgeName}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200">
+                100% Complete · Local Progress Saved Locally
+              </div>
+
+              <button
+                onClick={() => setActiveLessonPackId(null)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2"
+              >
+                <span>Continue Learning →</span>
+              </button>
+            </div>
+          ) : activeTab === 'gamification' ? (
+
+            /* =========================================================
+               TAB B: 🎮 DEDICATED GAMIFICATION VIEW
+               ========================================================= */
+            <div className="space-y-6 max-w-2xl mx-auto">
+              {/* Gamification Header */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">🎮 {pack.title[language]}</h2>
+                      <span className="text-xs text-slate-500 font-medium">Lesson Gamification Hub</span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                    ⭐ {earnedXp} / {lessonData.totalXp} XP
+                  </span>
+                </div>
+
+                {/* Your Progress */}
+                <div className="space-y-1.5 pt-2">
+                  <div className="flex justify-between text-xs font-semibold text-slate-700">
+                    <span>Your Progress</span>
+                    <span>{progressPct}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-indigo-600 h-full rounded-full transition-all duration-300"
+                      style={{ width: `${Math.max(5, progressPct)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge Progress & Streak */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Badge Card */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-500" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Badge Progress</h3>
+                  </div>
+                  <div className="pt-1">
+                    <span className="text-sm font-bold text-slate-900 block">
+                      🏅 {lessonData.badgeName}
+                    </span>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Progress: {completedCount} / {totalModules} checkpoints completed
+                    </p>
+                  </div>
+                </div>
+
+                {/* Streak Card */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-amber-500" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Streak</h3>
+                  </div>
+                  <div className="pt-1">
+                    <span className="text-sm font-bold text-slate-900 block flex items-center gap-1.5">
+                      🔥 {userProfile.streakDays} Day Learning Streak
+                    </span>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Daily habit maintained across offline sessions
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mission Checkpoints List */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">Mission Checkpoints</h3>
+
+                <div className="divide-y divide-slate-100 text-xs">
+                  {lessonData.modules.map((mod, idx) => {
+                    const isDone = !!moduleCompletedMap[idx];
+                    return (
+                      <div key={mod.id} className="py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[11px] ${
+                            isDone ? 'bg-indigo-600 text-white' : 'border border-slate-300 text-slate-400'
+                          }`}>
+                            {isDone ? '✓' : idx + 1}
+                          </span>
+                          <span className={`font-medium ${isDone ? 'text-slate-800' : 'text-slate-500'}`}>
+                            {mod.title[language]}
+                          </span>
+                        </div>
+                        <span className={`font-mono text-xs font-semibold ${isDone ? 'text-indigo-700' : 'text-slate-400'}`}>
+                          +{mod.xpReward} XP {isDone ? '✓' : ''}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={() => setActiveTab('lesson')}
+                    className="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-colors text-center"
+                  >
+                    Return to Lesson →
+                  </button>
+                </div>
               </div>
             </div>
+          ) : (
 
-            <button
-              onClick={() => setActiveLessonPackId(null)}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors"
-            >
-              {t.lesson.backToCourse}
-            </button>
-          </div>
-        ) : (
-          /* TWO-COLUMN LESSON WORKSPACE */
-          <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-            {/* Left Column: Lesson Outline / Checkpoints */}
-            <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-slate-200 p-4 space-y-3 bg-slate-50/40 overflow-y-auto">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                {t.lesson.checkpoints}
-              </span>
-
-              <div className="space-y-1.5">
-                {mission.steps.map((st, idx) => {
-                  const isActive = idx === currentStepIndex;
-                  const isDone = idx < currentStepIndex || (isActive && stepCompleted);
+            /* =========================================================
+               TAB A: 📖 DEDICATED WRITTEN LESSON VIEW
+               ========================================================= */
+            <div className="space-y-6 max-w-2xl mx-auto">
+              
+              {/* Checkpoint Pills Bar */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                {lessonData.modules.map((mod, idx) => {
+                  const isActive = idx === currentModuleIndex;
+                  const isDone = !!moduleCompletedMap[idx];
                   return (
                     <button
-                      key={st.id}
+                      key={mod.id}
                       onClick={() => {
-                        setCurrentStepIndex(idx);
+                        setCurrentModuleIndex(idx);
                         setSelectedOptionId(null);
                         setHasSubmitted(false);
-                        setStepCompleted(false);
                       }}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left transition-colors ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                         isActive
-                          ? 'bg-white text-indigo-800 border border-indigo-200 shadow-2xs font-semibold'
+                          ? 'bg-slate-900 text-white'
                           : isDone
-                          ? 'text-slate-700 hover:bg-slate-100'
-                          : 'text-slate-400 hover:bg-slate-100'
+                          ? 'bg-white border border-indigo-200 text-indigo-700'
+                          : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
                       }`}
                     >
-                      <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                          isDone
-                            ? 'bg-indigo-600 text-white'
-                            : isActive
-                            ? 'border-2 border-indigo-600 text-indigo-600 font-bold'
-                            : 'border border-slate-300 text-slate-400'
-                        }`}
-                      >
-                        {isDone ? '✓' : idx + 1}
-                      </div>
-                      <span className="truncate">{st.title[language]}</span>
+                      <span>{isDone ? '✓' : `M${idx + 1}`}</span>
+                      <span>{mod.title[language].split(':')[0].split('(')[0]}</span>
                     </button>
                   );
                 })}
               </div>
-            </aside>
 
-            {/* Main Content Area */}
-            <main className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
-              {currentStep && (
-                <div className="space-y-6">
-                  {/* Step Title & Explanation */}
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">
-                      {t.lesson.stepCount} {currentStepIndex + 1} of {mission.steps.length}
+              {/* Active Written Module Card */}
+              {currentModule && (
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-2xs space-y-6">
+                  
+                  {/* Module Header */}
+                  <div className="space-y-1.5 border-b border-slate-100 pb-4">
+                    <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider block">
+                      {currentModule.moduleLabel[language]}
                     </span>
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                      {currentStep.title[language]}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-                      {currentStep.description[language]}
-                    </p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+                      {currentModule.title[language]}
+                    </h2>
                   </div>
 
-                  {/* 1. Force Cart Simulation */}
-                  {currentStep.interactiveData?.simType === 'force_cart' && (
-                    <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-4 max-w-2xl">
-                      <div className="flex items-center justify-between text-xs font-medium text-slate-600">
-                        <span>Cart Mass: 150 kg | Initial Velocity: 12 m/s</span>
-                        <span className="font-semibold text-indigo-700">Target: Stop before 30m</span>
+                  {/* Written Educational Explanation */}
+                  <div className="space-y-4 text-slate-700 leading-relaxed text-sm sm:text-base">
+                    <p>{currentModule.conceptText[language]}</p>
+
+                    {/* Formula if present */}
+                    {currentModule.formula && (
+                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-center font-mono font-bold text-slate-900 text-sm">
+                        {currentModule.formula}
                       </div>
+                    )}
 
-                      {/* Track */}
-                      <div className="relative w-full h-14 bg-white border border-slate-200 rounded-lg overflow-hidden flex items-center px-4">
-                        <div className="absolute right-3 w-2.5 h-8 bg-rose-500 rounded-sm" />
-                        <div
-                          className={`transition-all duration-700 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-xs font-medium flex items-center gap-1.5 ${
-                            cartSimulating ? 'translate-x-48' : 'translate-x-1'
-                          }`}
-                        >
-                          <span>Cart (150kg)</span>
-                        </div>
+                    {/* Key Points */}
+                    {currentModule.keyPoints && (
+                      <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-indigo-900 block">
+                          Key Concept Points:
+                        </span>
+                        <ul className="space-y-1.5 text-xs sm:text-sm text-slate-700">
+                          {currentModule.keyPoints[language].map((pt, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-indigo-600 font-bold">•</span>
+                              <span>{pt}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
+                    )}
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                        <div className="flex items-center gap-3">
-                          <label className="text-xs font-medium text-slate-600">Braking Force:</label>
-                          <input
-                            type="range"
-                            min="100"
-                            max="600"
-                            step="20"
-                            value={appliedBrakingForce}
-                            onChange={(e) => setAppliedBrakingForce(Number(e.target.value))}
-                            className="accent-indigo-600 cursor-pointer"
-                          />
-                          <span className="text-xs font-mono font-bold text-slate-900">{appliedBrakingForce} N</span>
-                        </div>
-
-                        <button
-                          onClick={handleTestBraking}
-                          disabled={cartSimulating}
-                          className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg transition-colors"
-                        >
-                          {cartSimulating ? 'Testing...' : 'Test Brakes'}
-                        </button>
-                      </div>
-
-                      {cartStoppedDistance !== null && (
-                        <p className="text-xs font-medium text-slate-700 pt-1">
-                          {cartStoppedDistance <= 30 ? (
-                            <span className="text-indigo-700 font-semibold">✓ Cart stopped safely in {cartStoppedDistance} meters!</span>
-                          ) : (
-                            <span className="text-rose-700">⚠️ Cart required {cartStoppedDistance} meters. Increase braking force!</span>
-                          )}
-                        </p>
-                      )}
+                    {/* Real-World Example */}
+                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-xs sm:text-sm text-slate-600 italic">
+                      {currentModule.exampleText[language]}
                     </div>
-                  )}
+                  </div>
 
-                  {/* 2. Python Editor Simulation */}
-                  {currentStep.interactiveData?.simType === 'python_editor' && (
-                    <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3 font-mono max-w-2xl">
-                      <div className="flex items-center justify-between text-xs text-slate-500">
-                        <span>sensor_script.py</span>
-                        <button
-                          onClick={() =>
-                            setCodeContent(
-                              `# Sensor Data Aggregator\nreadings = [28, 31, 29, 30, 32]\ntotal = 0\nfor temp in readings:\n    total += temp\n\naverage = total / len(readings)\nprint(f"Average: {average} C")`
-                            )
-                          }
-                          className="text-[11px] text-indigo-700 hover:underline flex items-center gap-1 font-sans font-medium"
-                        >
-                          <RotateCcw className="w-3 h-3" /> Auto-Fix
-                        </button>
-                      </div>
-
-                      <textarea
-                        value={codeContent}
-                        onChange={(e) => setCodeContent(e.target.value)}
-                        rows={5}
-                        className="w-full bg-white p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:border-indigo-500"
-                        spellCheck={false}
-                      />
-
+                  {/* Quick Check Question (if module has question) */}
+                  {currentModule.hasQuestion && currentModule.question && currentModule.options && (
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
                       <div className="flex items-center justify-between">
-                        <button
-                          onClick={handleRunPython}
-                          className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg font-sans transition-colors"
-                        >
-                          Run Code
-                        </button>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                          Quick Check
+                        </h3>
+                        <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
+                          +{currentModule.xpReward} XP
+                        </span>
                       </div>
 
-                      {codeOutput && (
-                        <div
-                          className={`p-2.5 rounded-lg text-xs font-mono ${
-                            codeSuccess
-                              ? 'bg-indigo-50 border border-indigo-200 text-indigo-900'
-                              : 'bg-rose-50 border border-rose-200 text-rose-900'
-                          }`}
-                        >
-                          {codeOutput}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* 3. Chemistry Mixer Simulation */}
-                  {currentStep.interactiveData?.simType === 'chemistry_reaction' && (
-                    <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3 max-w-2xl">
-                      <span className="text-xs font-bold text-slate-700 block">
-                        Select Neutralizer for Base (NaOH) Spill:
-                      </span>
-                      <div className="grid grid-cols-3 gap-2">
-                        {['Weak Acid (HCl)', 'Pure Water', 'Alcohol'].map((item) => (
-                          <button
-                            key={item}
-                            onClick={() => {
-                              setSelectedReagent(item);
-                              if (item.includes('HCl')) {
-                                setReactionNote('✓ Reaction: Acid + Base → Salt + Water (Neutralized safely).');
-                              } else {
-                                setReactionNote('⚠️ Ineffective: Water does not neutralize strong alkalinity.');
-                              }
-                            }}
-                            className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-colors ${
-                              selectedReagent === item
-                                ? 'bg-white border-indigo-500 text-indigo-900 font-bold ring-1 ring-indigo-500'
-                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                            }`}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
-                      {reactionNote && <p className="text-xs font-medium text-slate-700">{reactionNote}</p>}
-                    </div>
-                  )}
-
-                  {/* Check Question */}
-                  {currentStep.question && currentStep.options && (
-                    <div className="space-y-3 max-w-2xl pt-2">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                        Check Your Understanding
-                      </h4>
-                      <p className="text-sm font-semibold text-slate-900">
-                        {currentStep.question[language]}
+                      <p className="text-sm sm:text-base font-semibold text-slate-900">
+                        {currentModule.question[language]}
                       </p>
 
-                      <div className="space-y-2">
-                        {currentStep.options.map((opt) => {
+                      <div className="space-y-2.5">
+                        {currentModule.options.map((opt) => {
                           const isSelected = selectedOptionId === opt.id;
                           let style = 'bg-white border-slate-200 text-slate-700 hover:border-slate-300';
 
-                          if (hasSubmitted) {
+                          if (hasSubmitted || isCurrentModuleDone) {
                             if (opt.isCorrect) {
-                              style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-medium';
+                              style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-semibold';
                             } else if (isSelected && !opt.isCorrect) {
                               style = 'bg-rose-50 border-rose-300 text-rose-900';
                             }
                           } else if (isSelected) {
-                            style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-medium ring-1 ring-indigo-400';
+                            style = 'bg-indigo-50 border-indigo-400 text-indigo-900 font-semibold ring-1 ring-indigo-400';
                           }
 
                           return (
                             <button
                               key={opt.id}
                               onClick={() => handleSelectOption(opt.id)}
-                              className={`w-full p-3 rounded-xl border text-left text-xs font-medium transition-colors flex items-center justify-between ${style}`}
+                              className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${style}`}
                             >
                               <span>{opt.text[language]}</span>
-                              {hasSubmitted && opt.isCorrect && (
+                              {(hasSubmitted || isCurrentModuleDone) && opt.isCorrect && (
                                 <CheckCircle2 className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                               )}
                             </button>
@@ -446,18 +499,18 @@ export const LessonWorkspace: React.FC = () => {
                       {/* Feedback banner */}
                       {hasSubmitted && (
                         <div
-                          className={`p-3 rounded-xl border text-xs leading-relaxed ${
-                            stepCompleted
+                          className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
+                            isCurrentModuleDone
                               ? 'bg-indigo-50 border-indigo-200 text-indigo-900'
                               : 'bg-rose-50 border-rose-200 text-rose-900'
                           }`}
                         >
                           <span className="font-bold block mb-0.5">
-                            {stepCompleted ? t.lesson.correctNotification : t.lesson.tryAgainNotification}
+                            {isCurrentModuleDone ? '✓ Correct! +XP Awarded' : '⚠️ Try again'}
                           </span>
                           <span>
                             {
-                              currentStep.options.find((o) => o.id === selectedOptionId)?.explanation[
+                              currentModule.options.find((o) => o.id === selectedOptionId)?.explanation[
                                 language
                               ]
                             }
@@ -466,49 +519,47 @@ export const LessonWorkspace: React.FC = () => {
                       )}
                     </div>
                   )}
+
+                  {/* Actions & Next Module Button */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <button
+                      onClick={handlePrevModule}
+                      disabled={currentModuleIndex === 0}
+                      className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 text-xs font-semibold text-slate-700 flex items-center justify-center gap-1.5"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Previous Module</span>
+                    </button>
+
+                    <div>
+                      {!isCurrentModuleDone ? (
+                        <button
+                          onClick={handleVerifyAnswer}
+                          disabled={currentModule.hasQuestion && !selectedOptionId}
+                          className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-xs transition-all"
+                        >
+                          {currentModule.hasQuestion ? 'Check Answer & Earn XP' : 'Mark as Complete →'}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleNextModule}
+                          className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2"
+                        >
+                          <span>
+                            {currentModuleIndex === totalModules - 1
+                              ? 'Finish Lesson →'
+                              : 'Next Module →'}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
-            </main>
-          </div>
-        )}
-
-        {/* Bottom Workspace Action Bar */}
-        {!isFinished && (
-          <div className="px-6 py-3.5 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-            <button
-              onClick={handlePrev}
-              disabled={currentStepIndex === 0}
-              className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 text-xs font-medium text-slate-700 flex items-center gap-1"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Previous</span>
-            </button>
-
-            <div>
-              {!stepCompleted ? (
-                <button
-                  onClick={handleVerifyAnswer}
-                  disabled={!selectedOptionId}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
-                >
-                  {t.lesson.checkAnswer}
-                </button>
-              ) : (
-                <button
-                  onClick={handleNext}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1"
-                >
-                  <span>
-                    {currentStepIndex === mission.steps.length - 1
-                      ? t.lesson.finishLesson
-                      : t.lesson.nextCheckpoint}
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
