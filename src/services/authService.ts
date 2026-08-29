@@ -50,6 +50,15 @@ export const authService = {
         return { user: null, session: null, error: error.message };
       }
 
+      // Check if user already exists (Supabase returns empty identities array for existing users)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        return {
+          user: null,
+          session: null,
+          error: 'An account with this email already exists. Please sign in.',
+        };
+      }
+
       return { user: data.user, session: data.session, error: null };
     } catch (err: any) {
       return {
@@ -79,6 +88,13 @@ export const authService = {
       });
 
       if (error) {
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          return {
+            user: null,
+            session: null,
+            error: 'Email not confirmed. Please check your inbox or turn OFF "Confirm email" in Supabase Dashboard (Authentication → Providers → Email).',
+          };
+        }
         return { user: null, session: null, error: error.message };
       }
 
