@@ -4,6 +4,8 @@ export type ConnectivityMode = 'online' | 'low_data' | 'offline';
 
 export type LearnerType = 'school' | 'undergrad';
 
+export type NavSection = 'home' | 'learn' | 'library' | 'missions' | 'achievements' | 'profile';
+
 export interface UserProfile {
   name: string;
   learnerType: LearnerType;
@@ -57,6 +59,7 @@ export interface InteractiveStep {
 export interface LearningPack {
   id: string;
   worldId: WorldId;
+  subjectName: { en: string; mr: string; hi: string };
   title: { en: string; mr: string; hi: string };
   subtitle: { en: string; mr: string; hi: string };
   levelBadge: { en: string; mr: string; hi: string };
@@ -70,6 +73,7 @@ export interface LearningPack {
   isDownloaded: boolean;
   downloadProgress?: number; // 0-100
   progressPercentage: number; // 0-100
+  lastAccessed?: string;
   syllabus: Array<{
     id: string;
     title: { en: string; mr: string; hi: string };

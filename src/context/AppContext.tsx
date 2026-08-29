@@ -54,13 +54,13 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PROFILE: 'learnkopargaon_user_profile_v1',
-  PACKS: 'learnkopargaon_packs_v1',
-  SYNC_QUEUE: 'learnkopargaon_pending_sync_v1',
-  LANG: 'learnkopargaon_language_v1',
-  CONN_MODE: 'learnkopargaon_conn_mode_v1',
-  MISSIONS: 'learnkopargaon_missions_v1',
-  BADGES: 'learnkopargaon_badges_v1',
+  PROFILE: 'nirantar_user_profile_v2',
+  PACKS: 'nirantar_packs_v2',
+  SYNC_QUEUE: 'nirantar_pending_sync_v2',
+  LANG: 'nirantar_language_v2',
+  CONN_MODE: 'nirantar_conn_mode_v2',
+  MISSIONS: 'nirantar_missions_v2',
+  BADGES: 'nirantar_badges_v2',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -89,10 +89,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : initialUserProfile;
   });
 
-  // 4. Learning Packs
+  // 4. Learning Packs (Merge with initial definitions)
   const [learningPacks, setLearningPacks] = useState<LearningPack[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.PACKS);
-    return saved ? JSON.parse(saved) : initialPacks;
+    if (!saved) return initialPacks;
+    try {
+      const parsed: LearningPack[] = JSON.parse(saved);
+      return initialPacks.map((initPack) => {
+        const found = parsed.find((p) => p.id === initPack.id);
+        return found ? { ...initPack, ...found, subjectName: initPack.subjectName } : initPack;
+      });
+    } catch {
+      return initialPacks;
+    }
   });
 
   // 5. Pending Offline Sync Queue
@@ -117,7 +126,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
 
   // Active views / modals
-  const [currentNav, setCurrentNav] = useState('dashboard');
+  const [currentNav, setCurrentNav] = useState('home');
   const [activePackModalId, setActivePackModalId] = useState<string | null>(null);
   const [activeLessonPackId, setActiveLessonPackId] = useState<string | null>(null);
   const [isDataImpactOpen, setIsDataImpactOpen] = useState(false);
@@ -181,7 +190,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setTimeout(() => setSyncSuccessMessage(null), 5000);
         }, 1800);
       } else {
-        setSyncSuccessMessage(t.connectivity.connectionRestored);
+        setSyncSuccessMessage(t.connectivity.syncedBanner);
         setTimeout(() => setSyncSuccessMessage(null), 3500);
       }
     }

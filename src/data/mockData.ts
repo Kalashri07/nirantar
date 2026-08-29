@@ -27,6 +27,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "physics-quest",
     worldId: "science",
+    subjectName: { en: "Physics", mr: "भौतिकशास्त्र", hi: "भौतिकी" },
     title: {
       en: "Physics Quest: Laws of Motion",
       mr: "भौतिकशास्त्र शोध: गतीचे नियम",
@@ -231,6 +232,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "chemistry-lab",
     worldId: "science",
+    subjectName: { en: "Chemistry", mr: "रसायनशास्त्र", hi: "रसायन विज्ञान" },
     title: {
       en: "Chemistry Lab: Periodic Table Mission",
       mr: "रसायनशास्त्र लॅब: आवर्त सारणी मोहीम",
@@ -378,6 +380,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "algebra-adventure",
     worldId: "math",
+    subjectName: { en: "Mathematics", mr: "गणित", hi: "गणित" },
     title: {
       en: "Math Explorer: Algebra Adventure",
       mr: "गणित शोधक: बीजगणित साहस",
@@ -474,6 +477,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "english-explorer",
     worldId: "language",
+    subjectName: { en: "English", mr: "इंग्रजी", hi: "अंग्रेजी" },
     title: {
       en: "English Explorer: Communication Challenge",
       mr: "इंग्रजी शोधक: व्यावहारिक संभाषण आव्हान",
@@ -577,6 +581,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "python-quest",
     worldId: "tech",
+    subjectName: { en: "Programming", mr: "प्रोग्रामिंग", hi: "प्रोग्रामिंग" },
     title: {
       en: "Python Quest: Code Breaker",
       mr: "पायथन शोध: कोड ब्रेकर",
@@ -680,6 +685,7 @@ export const learningPacks: LearningPack[] = [
   {
     id: "cybersecurity-mission",
     worldId: "tech",
+    subjectName: { en: "Cybersecurity", mr: "सायबर सुरक्षा", hi: "साइबर सुरक्षा" },
     title: {
       en: "Cybersecurity Mission: Defend the Network",
       mr: "सायबर सुरक्षा मोहीम: नेटवर्क संरक्षण",

@@ -1,609 +1,423 @@
-import type { Language } from '../types';
-
 export interface Translations {
   appName: string;
   tagline: string;
   subheading: string;
   nav: {
-    dashboard: string;
-    explore: string;
-    downloads: string;
+    home: string;
+    learn: string;
+    library: string;
     missions: string;
     achievements: string;
     profile: string;
-    lowData: string;
-    demoGuide: string;
   };
   connectivity: {
     online: string;
     lowData: string;
     offline: string;
-    onlineDesc: string;
-    lowDataDesc: string;
-    offlineDesc: string;
-    manageDownloads: string;
-    switchMode: string;
-    pendingSyncCount: string;
-    syncSuccess: string;
-    syncingTitle: string;
-    syncingSubtitle: string;
-    offlineSafety: string;
-    connectionRestored: string;
-    downloadDisabledOffline: string;
-    offlineReady: string;
+    connected: string;
+    offlineAvailable: string;
+    offlineBanner: string;
+    syncingBanner: string;
+    syncedBanner: string;
+    pendingSyncText: string;
   };
-  dashboard: {
-    greeting: string;
-    greetingSubtitle: string;
-    levelLabel: string;
-    xpProgress: string;
-    streakLabel: string;
+  home: {
+    welcomeSub: string;
     continueLearning: string;
-    continueMission: string;
+    continueAction: string;
     availableOffline: string;
-    recommendedPacks: string;
-    exploreAll: string;
-    dataSavedToday: string;
-    quickStats: string;
-    offlineHoursLabel: string;
-    activitiesLabel: string;
+    overview: string;
+    learningProgress: string;
+    currentStreak: string;
+    points: string;
+    daysStreak: string;
+    recommended: string;
+    recommendedSub: string;
+    startModule: string;
+    viewAll: string;
   };
-  worlds: {
-    allWorlds: string;
-    science: string;
-    math: string;
-    language: string;
-    tech: string;
-    scienceDesc: string;
-    mathDesc: string;
-    languageDesc: string;
-    techDesc: string;
-  };
-  downloads: {
+  learn: {
     title: string;
-    storageUsage: string;
-    storageFree: string;
-    downloadedPacks: string;
-    availableToDownload: string;
-    downloadButton: string;
-    downloading: string;
-    downloadComplete: string;
-    deleteFromDevice: string;
-    readyOffline: string;
-    sizeLabel: string;
-    noDownloadsYet: string;
+    subtitle: string;
+    schoolTab: string;
+    undergradTab: string;
+    allSubjects: string;
+    modulesCount: string;
   };
-  lowDataMode: {
-    bannerTitle: string;
-    bannerSubtitle: string;
-    sessionSaved: string;
-    impactTitle: string;
-    todayUsed: string;
-    todaySaved: string;
-    weekUsed: string;
-    weekSaved: string;
-    togglePrompt: string;
-    activeText: string;
+  library: {
+    title: string;
+    subtitle: string;
+    storageUsed: string;
+    downloadedList: string;
+    availableList: string;
+    downloadAction: string;
+    downloading: string;
+    readyOffline: string;
+    removeAction: string;
+    noDownloads: string;
   };
   missions: {
     title: string;
     subtitle: string;
-    dailyTab: string;
-    weeklyTab: string;
-    subjectTab: string;
+    todaysGoal: string;
+    todaysGoalDesc: string;
+    weeklyProgress: string;
+    availableChallenges: string;
     claimReward: string;
-    claimed: string;
-    locked: string;
+    completed: string;
   };
   achievements: {
     title: string;
     subtitle: string;
-    unlockedBadges: string;
-    lockedBadges: string;
-    xpHistory: string;
-    rarity: string;
+    recentEarned: string;
+    milestones: string;
+    subjectBadges: string;
+    streakBadges: string;
+    unlocked: string;
+    locked: string;
   };
   profile: {
     title: string;
-    learnerType: string;
+    subtitle: string;
+    educationDetails: string;
     gradeStream: string;
-    preferredLang: string;
-    offlineImpact: string;
-    hoursLearnedOffline: string;
-    activitiesCompletedOffline: string;
-    estimatedDataSaved: string;
+    learnerType: string;
+    languagePref: string;
+    dataSaverTitle: string;
+    dataSaverDesc: string;
+    dataSavedEstimate: string;
+    offlineSyncTitle: string;
+    offlineSyncDesc: string;
     resetDemo: string;
-    exportProgress: string;
-  };
-  onboarding: {
-    step1Title: string;
-    step1Subtitle: string;
-    step2Title: string;
-    step2Subtitle: string;
-    step3Title: string;
-    step3Subtitle: string;
-    step4Title: string;
-    step4Subtitle: string;
-    schoolStudent: string;
-    undergradStudent: string;
-    finishButton: string;
-    nextButton: string;
-    backButton: string;
   };
   lesson: {
-    learnTab: string;
-    thinkTab: string;
-    playTab: string;
-    challengeTab: string;
-    nextStep: string;
-    prevStep: string;
-    finishMission: string;
-    correctAnswer: string;
-    tryAgain: string;
-    missionCompleted: string;
-    badgeUnlocked: string;
-    xpEarnedNotice: string;
-    runCode: string;
-    resetCode: string;
-    codeSuccess: string;
-    codeError: string;
-    verifyAnswer: string;
-    backToDashboard: string;
+    checkpoints: string;
+    stepCount: string;
+    checkAnswer: string;
+    correctNotification: string;
+    tryAgainNotification: string;
+    nextCheckpoint: string;
+    finishLesson: string;
+    completedTitle: string;
+    completedDesc: string;
+    backToCourse: string;
   };
 }
 
-export const translations: Record<Language, Translations> = {
+export const translations: Record<'en' | 'mr' | 'hi', Translations> = {
   en: {
-    appName: "LearnKopargaon",
-    tagline: "Learn anywhere. Continue everywhere.",
-    subheading: "A multilingual, ultra-low-data learning platform designed for uninterrupted education in low-connectivity environments.",
+    appName: "Nirantar",
+    tagline: "Learning that continues, even when connectivity doesn't.",
+    subheading: "An offline-first, multilingual, low-bandwidth educational platform for school and undergraduate learners.",
     nav: {
-      dashboard: "Dashboard",
-      explore: "Explore Worlds",
-      downloads: "Offline Library",
+      home: "Home",
+      learn: "Learn",
+      library: "My Library",
       missions: "Missions",
       achievements: "Achievements",
       profile: "Profile",
-      lowData: "Data Saver",
-      demoGuide: "Demo Guide",
     },
     connectivity: {
-      online: "ONLINE",
-      lowData: "LOW DATA MODE",
-      offline: "OFFLINE",
-      onlineDesc: "Full network connectivity active. Cloud sync active.",
-      lowDataDesc: "Your learning experience is optimized to use minimal data.",
-      offlineDesc: "Your progress is safely saved on this device.",
-      manageDownloads: "Manage Downloads",
-      switchMode: "Switch Mode",
-      pendingSyncCount: "activities waiting to sync",
-      syncSuccess: "All progress synchronized successfully!",
-      syncingTitle: "Syncing your learning progress...",
-      syncingSubtitle: "Uploading local completions to cloud servers",
-      offlineSafety: "No internet needed! All completed quizzes and missions are safely cached.",
-      connectionRestored: "CONNECTION RESTORED",
-      downloadDisabledOffline: "Connect to internet or low-data mode to download new packs.",
-      offlineReady: "Ready for Offline Learning",
+      online: "Online",
+      lowData: "Low Data",
+      offline: "Offline",
+      connected: "Connected",
+      offlineAvailable: "Offline — Learning Available",
+      offlineBanner: "You're offline. Your downloaded lessons are still available.",
+      syncingBanner: "Syncing your offline learning progress to the cloud...",
+      syncedBanner: "You're back online. Your progress has been synced.",
+      pendingSyncText: "activities will sync when you're back online",
     },
-    dashboard: {
-      greeting: "Welcome to Nirantar 👋",
-      greetingSubtitle: "Learning that continues, even when connectivity doesn't.",
-      levelLabel: "Current Level",
-      xpProgress: "XP Progress",
-      streakLabel: "Day Streak",
+    home: {
+      welcomeSub: "Continue learning at your own pace.",
       continueLearning: "Continue Learning",
-      continueMission: "Continue Mission →",
-      availableOffline: "Available Offline ✓",
-      recommendedPacks: "Recommended Learning Packs",
-      exploreAll: "Explore All Worlds →",
-      dataSavedToday: "Data Saved Today",
-      quickStats: "Learning Impact",
-      offlineHoursLabel: "Offline Hours",
-      activitiesLabel: "Activities Done",
+      continueAction: "Continue Learning →",
+      availableOffline: "Available Offline",
+      overview: "Learning Overview",
+      learningProgress: "Learning Progress",
+      currentStreak: "Current Streak",
+      points: "Points",
+      daysStreak: "days",
+      recommended: "Recommended for You",
+      recommendedSub: "Structured curriculum modules tailored to your level.",
+      startModule: "Start Lesson →",
+      viewAll: "View all in Learn →",
     },
-    worlds: {
-      allWorlds: "All Learning Worlds",
-      science: "Science World",
-      math: "Math World",
-      language: "Language World",
-      tech: "Undergraduate Tech World",
-      scienceDesc: "Explore physics mechanics, periodic table elements, and interactive lab mysteries.",
-      mathDesc: "Master algebraic equations, spatial geometry, and progressive puzzles.",
-      languageDesc: "Enhance practical communication, vocabulary, and situational dialogs.",
-      techDesc: "Build real programming logic, security intuition, and terminal debugging.",
+    learn: {
+      title: "Explore Curriculum",
+      subtitle: "Browse curriculum tracks across school and undergraduate programs.",
+      schoolTab: "School (Classes 1–12)",
+      undergradTab: "Undergraduate (Higher Ed)",
+      allSubjects: "All Subjects",
+      modulesCount: "learning modules available",
     },
-    downloads: {
-      title: "My Offline Library",
-      storageUsage: "Offline Learning Storage",
-      storageFree: "available on local device",
-      downloadedPacks: "Downloaded Packs",
-      availableToDownload: "Available for Download",
-      downloadButton: "Download Pack",
+    library: {
+      title: "My Library",
+      subtitle: "Your downloaded learning, available anytime.",
+      storageUsed: "Storage used on this device",
+      downloadedList: "Downloaded Modules",
+      availableList: "Available for Download",
+      downloadAction: "Download to Device",
       downloading: "Downloading...",
-      downloadComplete: "Ready Offline ✓",
-      deleteFromDevice: "Remove Download",
-      readyOffline: "Available for 100% Offline Access",
-      sizeLabel: "Size",
-      noDownloadsYet: "No learning packs downloaded yet. Tap download on any module to make it accessible offline.",
-    },
-    lowDataMode: {
-      bannerTitle: "LOW DATA MODE ACTIVE",
-      bannerSubtitle: "High-res images and video streaming disabled. Pure text, vector SVGs, and interactive quizzes enabled.",
-      sessionSaved: "Estimated data saved this session",
-      impactTitle: "Data Consumption Impact",
-      todayUsed: "Data Used Today",
-      todaySaved: "Estimated Data Saved Today",
-      weekUsed: "Data Used This Week",
-      weekSaved: "Estimated Data Saved This Week",
-      togglePrompt: "Toggle Low Data Mode to save up to 85% mobile data bandwidth.",
-      activeText: "Active",
+      readyOffline: "Offline Ready",
+      removeAction: "Remove",
+      noDownloads: "No lessons downloaded yet. Tap 'Download to Device' on any module to study without internet.",
     },
     missions: {
-      title: "Mission Headquarters",
-      subtitle: "Complete daily and weekly curriculum challenges to level up faster.",
-      dailyTab: "Daily Quests",
-      weeklyTab: "Weekly Challenges",
-      subjectTab: "Special Ops",
+      title: "Learning Missions",
+      subtitle: "Complete daily goals and subject challenges to earn points and badges.",
+      todaysGoal: "Today's Goal",
+      todaysGoalDesc: "Complete at least one lesson or simulation checkpoint today.",
+      weeklyProgress: "Weekly Progress",
+      availableChallenges: "Available Challenges",
       claimReward: "Claim Reward",
-      claimed: "Claimed ✓",
-      locked: "Locked",
+      completed: "Completed ✓",
     },
     achievements: {
-      title: "Badges & Achievements",
-      subtitle: "Showcase your educational milestones and offline learning mastery.",
-      unlockedBadges: "Unlocked Badges",
-      lockedBadges: "Badges in Progress",
-      xpHistory: "XP Growth Timeline",
-      rarity: "Rarity",
+      title: "Achievements & Badges",
+      subtitle: "Track your learning milestones, offline mastery, and study streaks.",
+      recentEarned: "Recently Earned",
+      milestones: "Learning Milestones",
+      subjectBadges: "Subject Mastery",
+      streakBadges: "Streak & Dedication",
+      unlocked: "Unlocked",
+      locked: "In Progress",
     },
     profile: {
-      title: "Learner Profile",
-      learnerType: "Student Type",
-      gradeStream: "Class / Academic Stream",
-      preferredLang: "Preferred Language",
-      offlineImpact: "Offline Learning Impact",
-      hoursLearnedOffline: "Hours Learned Offline",
-      activitiesCompletedOffline: "Activities Completed Offline",
-      estimatedDataSaved: "Estimated Mobile Data Saved",
-      resetDemo: "Reset Demo State",
-      exportProgress: "Export Offline Certificate",
-    },
-    onboarding: {
-      step1Title: "Welcome to LearnKopargaon!",
-      step1Subtitle: "Choose your learner type to personalize your experience.",
-      step2Title: "Select Class or Stream",
-      step2Subtitle: "We adapt curriculum challenges to your grade.",
-      step3Title: "Choose Preferred Language",
-      step3Subtitle: "You can switch anytime during lessons.",
-      step4Title: "What are your learning interests?",
-      step4Subtitle: "Select subjects you are passionate about exploring.",
-      schoolStudent: "School Student (Class 1–12)",
-      undergradStudent: "Undergraduate Student (College)",
-      finishButton: "Launch Learning Dashboard 🚀",
-      nextButton: "Next Step →",
-      backButton: "← Back",
+      title: "Student Profile",
+      subtitle: "Manage your education stream, study language, and offline data saver.",
+      educationDetails: "Education Level",
+      gradeStream: "Grade / Stream",
+      learnerType: "Student Category",
+      languagePref: "Primary Language",
+      dataSaverTitle: "Low Data Mode",
+      dataSaverDesc: "Disables heavy media and non-essential assets to save bandwidth.",
+      dataSavedEstimate: "You've saved approximately 120 MB of data this month.",
+      offlineSyncTitle: "Local Storage & Cloud Sync",
+      offlineSyncDesc: "All quiz answers and lesson checkpoints are saved locally first.",
+      resetDemo: "Reset Demo Progress",
     },
     lesson: {
-      learnTab: "1. Learn Concept",
-      thinkTab: "2. Think & Reflect",
-      playTab: "3. Interactive Play",
-      challengeTab: "4. Mission Checkpoint",
-      nextStep: "Next Stage →",
-      prevStep: "← Previous",
-      finishMission: "Complete Mission 🎉",
-      correctAnswer: "Awesome! Correct Answer +25 XP",
-      tryAgain: "Not quite right. Read the hint and try again!",
-      missionCompleted: "MISSION COMPLETED 🏆",
-      badgeUnlocked: "New Badge Unlocked!",
-      xpEarnedNotice: "XP Earned",
-      runCode: "▶ Run Code",
-      resetCode: "↺ Reset Code",
-      codeSuccess: "Code executed flawlessly! Test cases passed.",
-      codeError: "Syntax Error or bug detected. Review line highlighted.",
-      verifyAnswer: "Verify Solution",
-      backToDashboard: "Return to Dashboard",
+      checkpoints: "Lesson Outline",
+      stepCount: "Checkpoint",
+      checkAnswer: "Check Answer",
+      correctNotification: "+25 XP · Great work!",
+      tryAgainNotification: "Not quite. Check the hint and try again!",
+      nextCheckpoint: "Next Checkpoint →",
+      finishLesson: "Finish Lesson 🎉",
+      completedTitle: "Checkpoint Completed!",
+      completedDesc: "You have completed all interactive checkpoints for this lesson.",
+      backToCourse: "Back to Dashboard",
     },
   },
   mr: {
-    appName: "लर्नकोपरगाव (LearnKopargaon)",
-    tagline: "कुठेही शिका. अखंड प्रगती करा.",
-    subheading: "कोपरगाव आणि ग्रामीण भागातील विद्यार्थ्यांसाठी ऑफलाइन-प्रथम, कमी-डेटा, बहुभाषिक शिक्षण मंच.",
+    appName: "निरंतर",
+    tagline: "इंटरनेट नसले तरी अखंड चालू राहणारे शिक्षण.",
+    subheading: "शालेय व महाविद्यालयीन विद्यार्थ्यांसाठी ऑफलाइन-फर्स्ट, कमी-डेटा, बहुभाषी शिक्षण मंच.",
     nav: {
-      dashboard: "डॅशबोर्ड",
-      explore: "विषय जग (Explore)",
-      downloads: "ऑफलाइन लायब्ररी",
-      missions: "मोहिमा (Missions)",
-      achievements: "यश व पदके",
+      home: "मुख्यपृष्ठ",
+      learn: "अभ्यासक्रम",
+      library: "माझी लायब्ररी",
+      missions: "मोहिमा",
+      achievements: "उपलब्धी",
       profile: "माझे प्रोफाईल",
-      lowData: "डेटा सेव्हर",
-      demoGuide: "डेमो मार्गदर्शक",
     },
     connectivity: {
-      online: "ऑनलाइन (ONLINE)",
-      lowData: "कमी डेटा मोड (LOW DATA)",
-      offline: "ऑफलाइन (OFFLINE)",
-      onlineDesc: "इंटरनेट सक्रिय आहे. क्लाउड सिंक चालू आहे.",
-      lowDataDesc: "तुमचा शिकण्याचा अनुभव कमीत कमी इंटरनेट डेटामध्ये चालण्यासाठी ऑप्टिमाइझ केला आहे.",
-      offlineDesc: "तुमची प्रगती या फोन/डिव्हाइसवर सुरक्षितपणे सेव्ह झाली आहे.",
-      manageDownloads: "डाउनलोड्स व्यवस्थापित करा",
-      switchMode: "मोड बदला",
-      pendingSyncCount: "क्रियाकलाप सिंक होण्याची वाट पाहत आहेत",
-      syncSuccess: "सर्व प्रगती क्लाउडवर यशस्वीरित्या सिंक झाली!",
-      syncingTitle: "तुमची शिक्षण प्रगती सिंक होत आहे...",
-      syncingSubtitle: "ऑफलाइन पूर्ण केलेले धडे सर्व्हरवर पाठवत आहोत",
-      offlineSafety: "इंटरनेटची गरज नाही! सर्व उत्तरे व प्रगती स्थानिक मेमरीमध्ये सुरक्षित आहेत.",
-      connectionRestored: "इंटरनेट कनेक्शन पुन्हा जोडले गेले!",
-      downloadDisabledOffline: "नवीन पॅक डाउनलोड करण्यासाठी इंटरनेट चालू करा.",
-      offlineReady: "ऑफलाइन शिक्षणासाठी तयार",
+      online: "ऑनलाइन",
+      lowData: "कमी डेटा मोड",
+      offline: "ऑफलाइन",
+      connected: "जोडले आहे",
+      offlineAvailable: "ऑफलाइन — शिक्षण उपलब्ध",
+      offlineBanner: "तुम्ही ऑफलाइन आहात. तुमचे डाउनलोड केलेले धडे उपलब्ध आहेत.",
+      syncingBanner: "ऑफलाइन शिकलेली प्रगती क्लाउडवर सिंक होत आहे...",
+      syncedBanner: "तुम्ही पुन्हा ऑनलाइन आलात. तुमची प्रगती सिंक झाली आहे.",
+      pendingSyncText: "क्रियाकलाप पुन्हा ऑनलाइन आल्यावर सिंक होतील",
     },
-    dashboard: {
-      greeting: "निरंतर मध्ये आपले स्वागत आहे 👋",
-      greetingSubtitle: "इंटरनेट नसले तरी अखंड चालू राहणारे शिक्षण.",
-      levelLabel: "सध्याची पातळी",
-      xpProgress: "XP प्रगती",
-      streakLabel: "दिवसांची मालिका (Streak)",
+    home: {
+      welcomeSub: "आपल्या गतीने आणि सवडीनुसार शिका.",
       continueLearning: "शिकणे पुढे चालू ठेवा",
-      continueMission: "मोहीम सुरू ठेवा →",
-      availableOffline: "ऑफलाइन उपलब्ध ✓",
-      recommendedPacks: "शिफारस केलेले शिक्षण संच",
-      exploreAll: "सर्व विषय जग पहा →",
-      dataSavedToday: "आज वाचवलेला डेटा",
-      quickStats: "शिक्षणाचा प्रभाव",
-      offlineHoursLabel: "ऑफलाइन तास",
-      activitiesLabel: "पूर्ण उपक्रम",
+      continueAction: "अभ्यास पुढे चालू ठेवा →",
+      availableOffline: "ऑफलाइन उपलब्ध",
+      overview: "शिक्षणाचा आढावा",
+      learningProgress: "एकूण प्रगती",
+      currentStreak: "सध्याची मालिका",
+      points: "गुण (XP)",
+      daysStreak: "दिवस",
+      recommended: "तुमच्यासाठी शिफारस केलेले",
+      recommendedSub: "तुमच्या इयत्तेनुसार तयार केलेले अभ्यासक्रम संच.",
+      startModule: "धडा सुरू करा →",
+      viewAll: "सर्व अभ्यासक्रम पहा →",
     },
-    worlds: {
-      allWorlds: "सर्व शिक्षण जग (Learning Worlds)",
-      science: "विज्ञान विश्व (Science)",
-      math: "गणित विश्व (Math)",
-      language: "भाषा विश्व (Language)",
-      tech: "पदवीधर तंत्रज्ञान विश्व (Tech)",
-      scienceDesc: "भौतिकशास्त्राचे नियम, आवर्त सारणी आणि प्रयोगशाळेतील रहस्ये अनुभवा.",
-      mathDesc: "बीजगणित समीकरणे, भूमिती आणि बुद्धिमत्ता कोडी सोडवा.",
-      languageDesc: "संभाषण कौशल्य, शब्दसंग्रह आणि व्यावहारिक संवाद सुधारा.",
-      techDesc: "पायथन प्रोग्रामिंग, सायबर सुरक्षा आणि कोडिंग कोडी सोडवा.",
+    learn: {
+      title: "अभ्यासक्रम विषय",
+      subtitle: "शालेय आणि महाविद्यालयीन शिक्षण विभागांमधील विषय निवडा.",
+      schoolTab: "शालेय (इयत्ता १ ते १२)",
+      undergradTab: "पदवीधर (उच्च शिक्षण)",
+      allSubjects: "सर्व विषय",
+      modulesCount: "अभ्यासक्रम संच उपलब्ध",
     },
-    downloads: {
-      title: "माझी ऑफलाइन लायब्ररी",
-      storageUsage: "ऑफलाइन स्टोरेज वापर",
-      storageFree: "डिव्हाइसवर शिल्लक जागा",
-      downloadedPacks: "डाउनलोड केलेले संच",
-      availableToDownload: "डाउनलोडसाठी उपलब्ध",
-      downloadButton: "पॅक डाउनलोड करा",
+    library: {
+      title: "माझी लायब्ररी",
+      subtitle: "तुमचे डाउनलोड केलेले धडे, कधीही उपलब्ध.",
+      storageUsed: "डिव्हाइसवर वापरलेली जागा",
+      downloadedList: "डाउनलोड केलेले संच",
+      availableList: "डाउनलोडसाठी उपलब्ध",
+      downloadAction: "डिव्हाइसवर डाउनलोड करा",
       downloading: "डाउनलोड होत आहे...",
-      downloadComplete: "ऑफलाइन तयार ✓",
-      deleteFromDevice: "डाउनलोड काढा",
-      readyOffline: "१००% ऑफलाइन वापरासाठी उपलब्ध",
-      sizeLabel: "आकार",
-      noDownloadsYet: "अद्याप कोणताही पॅक डाउनलोड केला नाही. ऑफलाइन वापरण्यासाठी डाउनलोड बटनावर टॅप करा.",
-    },
-    lowDataMode: {
-      bannerTitle: "कमी डेटा मोड सक्रिय (LOW DATA MODE)",
-      bannerSubtitle: "मोठ्या प्रतिमा आणि व्हिडिओ बंद. केवळ उपयुक्त मजकूर, व्हेक्टर चित्रे आणि प्रश्नमंजुषा चालू.",
-      sessionSaved: "या सत्रात वाचवलेला अंदाजे डेटा",
-      impactTitle: "डेटा बचत प्रभाव",
-      todayUsed: "आज वापरलेला डेटा",
-      todaySaved: "आज वाचवलेला अंदाजे डेटा",
-      weekUsed: "या आठवड्यात वापरलेला डेटा",
-      weekSaved: "या आठवड्यात वाचवलेला डेटा",
-      togglePrompt: "८५% पर्यंत मोबाइल डेटा वाचवण्यासाठी कमी डेटा मोड चालू करा.",
-      activeText: "सक्रिय",
+      readyOffline: "ऑफलाइन तयार",
+      removeAction: "काढा",
+      noDownloads: "अद्याप कोणतेही धडे डाउनलोड केलेले नाहीत. ऑफलाइन शिकण्यासाठी कोणत्याही संचावर 'डाउनलोड' दाबा.",
     },
     missions: {
-      title: "मोहीम केंद्र (Missions)",
-      subtitle: "पातळी वाढवण्यासाठी दररोज आणि साप्ताहिक आव्हाने पूर्ण करा.",
-      dailyTab: "दैनिक मोहिमा",
-      weeklyTab: "साप्ताहिक आव्हाने",
-      subjectTab: "विशेष आव्हाने",
+      title: "शिक्षण मोहिमा",
+      subtitle: "गुण आणि पदके मिळवण्यासाठी दररोज आणि साप्ताहिक उद्दिष्टे पूर्ण करा.",
+      todaysGoal: "आजचे उद्दिष्ट",
+      todaysGoalDesc: "आज किमान एक धडा किंवा प्रयोगशाळा टप्पा पूर्ण करा.",
+      weeklyProgress: "साप्ताहिक प्रगती",
+      availableChallenges: "उपलब्ध आव्हाने",
       claimReward: "बक्षीस मिळवा",
-      claimed: "मिळाले ✓",
-      locked: "कुलूपबंद",
+      completed: "पूर्ण झाले ✓",
     },
     achievements: {
-      title: "पदके आणि उपलब्धी (Achievements)",
-      subtitle: "तुमचे शैक्षणिक टप्पे आणि ऑफलाइन प्रभुत्व दाखवा.",
-      unlockedBadges: "अनलॉक झालेली पदके",
-      lockedBadges: "प्रगतीत असलेली पदके",
-      xpHistory: "XP वाढीचा इतिहास",
-      rarity: "दुर्मिळता",
+      title: "पदके आणि उपलब्धी",
+      subtitle: "तुमचे शैक्षणिक टप्पे आणि सातत्य तपासा.",
+      recentEarned: "अलीकडे मिळालेली पदके",
+      milestones: "शैक्षणिक टप्पे",
+      subjectBadges: "विषय नैपुण्य",
+      streakBadges: "सातत्य आणि निष्ठा",
+      unlocked: "अनलॉक झाले",
+      locked: "प्रगतीत",
     },
     profile: {
       title: "विद्यार्थी प्रोफाईल",
-      learnerType: "विद्यार्थी प्रकार",
-      gradeStream: "इयत्ता / शैक्षणिक शाखा",
-      preferredLang: "पसंतीची भाषा",
-      offlineImpact: "ऑफलाइन शिक्षणाचा प्रभाव",
-      hoursLearnedOffline: "ऑफलाइन शिकलेले तास",
-      activitiesCompletedOffline: "ऑफलाइन पूर्ण केलेले उपक्रम",
-      estimatedDataSaved: "वाचवलेला मोबाइल डेटा",
+      subtitle: "तुमची इयत्ता, भाषा आणि डेटा सेव्हर व्यवस्थापित करा.",
+      educationDetails: "शिक्षण पातळी",
+      gradeStream: "इयत्ता / शाखा",
+      learnerType: "विद्यार्थी गट",
+      languagePref: "प्राधान्य दिलेली भाषा",
+      dataSaverTitle: "कमी डेटा मोड",
+      dataSaverDesc: "बँडविड्थ वाचवण्यासाठी मोठ्या फाइल्स बंद ठेवते.",
+      dataSavedEstimate: "तुम्ही या महिन्यात अंदाजे १२० MB डेटा वाचवला आहे.",
+      offlineSyncTitle: "स्थानिक स्टोरेज आणि सिंक",
+      offlineSyncDesc: "सर्व उत्तरे आणि प्रगती आधी फोनमध्ये सुरक्षित साठवली जाते.",
       resetDemo: "डेमो रीसेट करा",
-      exportProgress: "प्रगती प्रमाणपत्र डाउनलोड करा",
-    },
-    onboarding: {
-      step1Title: "लर्नकोपरगाव मध्ये आपले स्वागत आहे!",
-      step1Subtitle: "वैयक्तिक अनुभवासाठी तुमचा विद्यार्थी प्रकार निवडा.",
-      step2Title: "इयत्ता किंवा शाखा निवडा",
-      step2Subtitle: "आम्ही तुमच्या इयत्तेनुसार आव्हाने जुळवून घेतो.",
-      step3Title: "पसंतीची भाषा निवडा",
-      step3Subtitle: "धड्यादरम्यान तुम्ही केव्हाही भाषा बदलू शकता.",
-      step4Title: "तुमचे आवडते विषय कोणते आहेत?",
-      step4Subtitle: "तुम्हाला शिकायला आवडणारे विषय निवडा.",
-      schoolStudent: "शालेय विद्यार्थी (इयत्ता १–१२)",
-      undergradStudent: "पदवीधर विद्यार्थी (कॉलेज)",
-      finishButton: "डॅशबोर्ड सुरू करा 🚀",
-      nextButton: "पुढील पायरी →",
-      backButton: "← मागे",
     },
     lesson: {
-      learnTab: "१. संकल्पना शिका",
-      thinkTab: "२. विचार करा",
-      playTab: "३. संवादात्मक खेळ",
-      challengeTab: "४. अंतिम आव्हान",
-      nextStep: "पुढील टप्पा →",
-      prevStep: "← मागे",
-      finishMission: "मोहीम पूर्ण करा 🎉",
-      correctAnswer: "उत्कृष्ट! अचूक उत्तर +२५ XP",
-      tryAgain: "उत्तर बरोबर नाही. संकेत वाचा आणि पुन्हा प्रयत्न करा!",
-      missionCompleted: "मोहीम यशस्वीरित्या पूर्ण 🏆",
-      badgeUnlocked: "नवीन पदक अनलॉक झाले!",
-      xpEarnedNotice: "मिळालेले XP",
-      runCode: "▶ कोड चालवा",
-      resetCode: "↺ कोड रीसेट करा",
-      codeSuccess: "कोड योग्यरित्या चालला! सर्व चाचण्या उत्तीर्ण.",
-      codeError: "कोडमध्ये त्रुटी आढळली. ठळक ओळ तपासा.",
-      verifyAnswer: "उत्तर तपासा",
-      backToDashboard: "डॅशबोर्डवर परत जा",
+      checkpoints: "धड्याची रूपरेषा",
+      stepCount: "टप्पा",
+      checkAnswer: "उत्तर तपासा",
+      correctNotification: "+२५ XP · उत्तम कार्य!",
+      tryAgainNotification: "उत्तर बरोबर नाही. पुन्हा प्रयत्न करा!",
+      nextCheckpoint: "पुढील टप्पा →",
+      finishLesson: "धडा पूर्ण करा 🎉",
+      completedTitle: "टप्पा पूर्ण झाला!",
+      completedDesc: "तुम्ही या धड्यातील सर्व टप्पे यशस्वीरित्या पूर्ण केले आहेत.",
+      backToCourse: "डॅशबोर्डवर परत जा",
     },
   },
   hi: {
-    appName: "लर्नकोपरगांव (LearnKopargaon)",
-    tagline: "कहीं भी सीखें। निरंतर आगे बढ़ें।",
-    subheading: "कोपरगांव और ग्रामीण क्षेत्रों के छात्रों के लिए ऑफलाइन-फर्स्ट, कम-डेटा, बहुभाषी शिक्षण मंच।",
+    appName: "निरंतर",
+    tagline: "इंटरनेट के बिना भी निरंतर जारी रहने वाली शिक्षा।",
+    subheading: "स्कूली और कॉलेज छात्रों के लिए ऑफलाइन-फर्स्ट, कम-डेटा, बहुभाषी शिक्षण मंच।",
     nav: {
-      dashboard: "डैशबोर्ड",
-      explore: "विषय संसार (Explore)",
-      downloads: "ऑफलाइन लाइब्रेरी",
-      missions: "मिशन (Missions)",
-      achievements: "उपलब्धियां व बैज",
-      profile: "मेरा प्रोफ़ाइल",
-      lowData: "डेटा सेवर",
-      demoGuide: "डेमो गाइड",
+      home: "मुख्य पृष्ठ",
+      learn: "पाठ्यक्रम",
+      library: "मेरी लाइब्रेरी",
+      missions: "मिशन",
+      achievements: "उपलब्धियां",
+      profile: "प्रोफ़ाइल",
     },
     connectivity: {
-      online: "ऑनलाइन (ONLINE)",
-      lowData: "कम डेटा मोड (LOW DATA)",
-      offline: "ऑफलाइन (OFFLINE)",
-      onlineDesc: "इंटरनेट कनेक्टिविटी सक्रिय है। क्लाउड सिंक चालू है।",
-      lowDataDesc: "आपका शिक्षण अनुभव न्यूनतम डेटा का उपयोग करने के लिए अनुकूलित है।",
-      offlineDesc: "आपकी प्रगति इस डिवाइस पर सुरक्षित रूप से सहेजी गई है।",
-      manageDownloads: "डाउनलोड प्रबंधित करें",
-      switchMode: "मोड बदलें",
-      pendingSyncCount: "गतिविधियां सिंक होने की प्रतीक्षा कर रही हैं",
-      syncSuccess: "सभी प्रगति क्लाउड पर सफलतापूर्वक सिंक हो गई!",
-      syncingTitle: "आपकी सीखने की प्रगति सिंक हो रही है...",
-      syncingSubtitle: "ऑफलाइन पूर्ण किए गए पाठ सर्वर पर अपलोड किए जा रहे हैं",
-      offlineSafety: "इंटरनेट की आवश्यकता नहीं! सभी उत्तर और क्विज़ स्थानीय रूप से सुरक्षित हैं।",
-      connectionRestored: "इंटरनेट कनेक्शन बहाल हुआ!",
-      downloadDisabledOffline: "नए पैक डाउनलोड करने के लिए इंटरनेट से कनेक्ट करें।",
-      offlineReady: "ऑफलाइन सीखने के लिए तैयार",
+      online: "ऑनलाइन",
+      lowData: "कम डेटा मोड",
+      offline: "ऑफलाइन",
+      connected: "कनेक्टेड",
+      offlineAvailable: "ऑफलाइन — शिक्षा उपलब्ध",
+      offlineBanner: "आप ऑफलाइन हैं। आपके डाउनलोड किए गए पाठ उपलब्ध हैं।",
+      syncingBanner: "ऑफलाइन सीखने की प्रगति क्लाउड पर सिंक हो रही है...",
+      syncedBanner: "आप वापस ऑनलाइन आ गए हैं। आपकी प्रगति सिंक हो गई है।",
+      pendingSyncText: "गतिविधियां वापस ऑनलाइन आने पर सिंक होंगी",
     },
-    dashboard: {
-      greeting: "निरंतर में आपका स्वागत है 👋",
-      greetingSubtitle: "इंटरनेट के बिना भी निरंतर जारी रहने वाली शिक्षा।",
-      levelLabel: "वर्तमान स्तर",
-      xpProgress: "XP प्रगति",
-      streakLabel: "दिनों का स्ट्रीक",
+    home: {
+      welcomeSub: "अपनी गति से सीखना जारी रखें।",
       continueLearning: "सीखना जारी रखें",
-      continueMission: "मिशन जारी रखें →",
-      availableOffline: "ऑफलाइन उपलब्ध ✓",
-      recommendedPacks: "अनुशंसित शिक्षण पैक",
-      exploreAll: "सभी विषय संसार देखें →",
-      dataSavedToday: "आज बचाया गया डेटा",
-      quickStats: "शिक्षण प्रभाव",
-      offlineHoursLabel: "ऑफलाइन घंटे",
-      activitiesLabel: "पूर्ण गतिविधियां",
+      continueAction: "पाठ जारी रखें →",
+      availableOffline: "ऑफलाइन उपलब्ध",
+      overview: "सीखने का अवलोकन",
+      learningProgress: "कुल प्रगति",
+      currentStreak: "वर्तमान स्ट्रीक",
+      points: "अंक (XP)",
+      daysStreak: "दिन",
+      recommended: "आपके लिए अनुशंसित",
+      recommendedSub: "आपकी कक्षा के अनुसार तैयार किए गए शिक्षण मॉड्यूल।",
+      startModule: "पाठ शुरू करें →",
+      viewAll: "सभी पाठ्यक्रम देखें →",
     },
-    worlds: {
-      allWorlds: "सभी शिक्षण संसार (Learning Worlds)",
-      science: "विज्ञान संसार (Science)",
-      math: "गणित संसार (Math)",
-      language: "भाषा संसार (Language)",
-      tech: "स्नातक तकनीकी संसार (Tech)",
-      scienceDesc: "भौतिकी के नियम, आवर्त सारणी और प्रयोगशाला रहस्यों को समझें।",
-      mathDesc: "बीजगणित के समीकरण, ज्यामिति और प्रगतिशील पहेलियां हल करें।",
-      languageDesc: "व्यावहारिक संचार, शब्दावली और संवादात्मक कौशल में सुधार करें।",
-      techDesc: "पायथन प्रोग्रामिंग, साइबर सुरक्षा और कोडिंग पहेलियां हल करें।",
+    learn: {
+      title: "पाठ्यक्रम देखें",
+      subtitle: "स्कूली और स्नातक स्तर के सभी विषयों में से चुनें।",
+      schoolTab: "स्कूल (कक्षा 1 से 12)",
+      undergradTab: "कॉलेज / स्नातक (उच्च शिक्षा)",
+      allSubjects: "सभी विषय",
+      modulesCount: "मॉड्यूल उपलब्ध",
     },
-    downloads: {
-      title: "मेरी ऑफलाइन लाइब्रेरी",
-      storageUsage: "ऑफलाइन स्टोरेज उपयोग",
-      storageFree: "डिवाइस पर उपलब्ध स्थान",
-      downloadedPacks: "डाउनलोड किए गए पैक",
-      availableToDownload: "डाउनलोड के लिए उपलब्ध",
-      downloadButton: "पैक डाउनलोड करें",
+    library: {
+      title: "मेरी लाइब्रेरी",
+      subtitle: "आपके डाउनलोड किए गए पाठ, कभी भी उपलब्ध।",
+      storageUsed: "डिवाइस पर उपयोग किया गया स्टोरेज",
+      downloadedList: "डाउनलोड किए गए मॉड्यूल",
+      availableList: "डाउनलोड के लिए उपलब्ध",
+      downloadAction: "डिवाइस पर डाउनलोड करें",
       downloading: "डाउनलोड हो रहा है...",
-      downloadComplete: "ऑफलाइन तैयार ✓",
-      deleteFromDevice: "डाउनलोड हटाएं",
-      readyOffline: "100% ऑफलाइन उपयोग के लिए उपलब्ध",
-      sizeLabel: "आकार",
-      noDownloadsYet: "अभी तक कोई पैक डाउनलोड नहीं हुआ। ऑफलाइन उपयोग के लिए किसी भी मॉड्यूल पर डाउनलोड दबाएं।",
-    },
-    lowDataMode: {
-      bannerTitle: "कम डेटा मोड सक्रिय (LOW DATA MODE)",
-      bannerSubtitle: "भारी चित्र और वीडियो बंद। केवल उपयोगी टेक्स्ट, वेक्टर चित्र और क्विज़ सक्षम।",
-      sessionSaved: "इस सत्र में बचाया गया अनुमानित डेटा",
-      impactTitle: "डेटा बचत प्रभाव",
-      todayUsed: "आज प्रयुक्त डेटा",
-      todaySaved: "आज बचाया गया अनुमानित डेटा",
-      weekUsed: "इस सप्ताह प्रयुक्त डेटा",
-      weekSaved: "इस सप्ताह बचाया गया डेटा",
-      togglePrompt: "85% तक मोबाइल डेटा बचाने के लिए कम डेटा मोड चालू करें।",
-      activeText: "सक्रिय",
+      readyOffline: "ऑफलाइन तैयार",
+      removeAction: "हटाएं",
+      noDownloads: "अभी तक कोई पाठ डाउनलोड नहीं हुआ है। ऑफलाइन पढ़ने के लिए किसी भी मॉड्यूल पर 'डाउनलोड' दबाएं।",
     },
     missions: {
-      title: "मिशन मुख्यालय (Missions)",
-      subtitle: "तेजी से लेवल अप करने के लिए दैनिक और साप्ताहिक चुनौतियां पूरी करें।",
-      dailyTab: "दैनिक मिशन",
-      weeklyTab: "साप्ताहिक चुनौतियां",
-      subjectTab: "विशेष मिशन",
+      title: "लर्निंग मिशन",
+      subtitle: "अंक और बैज अर्जित करने के लिए दैनिक लक्ष्य और चुनौतियाँ पूरी करें।",
+      todaysGoal: "आज का लक्ष्य",
+      todaysGoalDesc: "आज कम से कम एक पाठ या लैब चेकपॉइंट पूरा करें।",
+      weeklyProgress: "साप्ताहिक प्रगति",
+      availableChallenges: "उपलब्ध चुनौतियां",
       claimReward: "इनाम प्राप्त करें",
-      claimed: "प्राप्त किया ✓",
-      locked: "बंद",
+      completed: "पूर्ण हुआ ✓",
     },
     achievements: {
-      title: "बैज और उपलब्धियां (Achievements)",
-      subtitle: "अपने शैक्षणिक मील के पत्थर और ऑफलाइन महारत का प्रदर्शन करें।",
-      unlockedBadges: "अनलॉक किए गए बैज",
-      lockedBadges: "प्रगति में बैज",
-      xpHistory: "XP वृद्धि समयरेखा",
-      rarity: "दुर्लभता",
+      title: "उपलब्धियां और बैज",
+      subtitle: "अपने शैक्षणिक मील के पत्थर और अध्ययन स्ट्रीक को ट्रैक करें।",
+      recentEarned: "हाल ही में अर्जित बैज",
+      milestones: "शिक्षण मील के पत्थर",
+      subjectBadges: "विषय दक्षता",
+      streakBadges: "स्ट्रीक और समर्पण",
+      unlocked: "अनलॉक",
+      locked: "प्रगति में",
     },
     profile: {
       title: "छात्र प्रोफ़ाइल",
-      learnerType: "छात्र का प्रकार",
-      gradeStream: "कक्षा / अध्ययन शाखा",
-      preferredLang: "पसंदीदा भाषा",
-      offlineImpact: "ऑफलाइन शिक्षण प्रभाव",
-      hoursLearnedOffline: "ऑफलाइन सीखे गए घंटे",
-      activitiesCompletedOffline: "ऑफलाइन पूर्ण की गई गतिविधियां",
-      estimatedDataSaved: "बचाया गया मोबाइल डेटा",
+      subtitle: "अपनी कक्षा, अध्ययन भाषा और डेटा सेवर को प्रबंधित करें।",
+      educationDetails: "शिक्षा स्तर",
+      gradeStream: "कक्षा / स्ट्रीम",
+      learnerType: "छात्र श्रेणी",
+      languagePref: "प्राथमिक भाषा",
+      dataSaverTitle: "कम डेटा मोड",
+      dataSaverDesc: "बैंडविड्थ बचाने के लिए भारी मीडिया को अक्षम करता है।",
+      dataSavedEstimate: "आपने इस महीने लगभग 120 MB डेटा बचाया है।",
+      offlineSyncTitle: "स्थानीय मेमोरी और सिंक",
+      offlineSyncDesc: "सभी उत्तर और चेकपॉइंट पहले आपके डिवाइस पर सुरक्षित होते हैं।",
       resetDemo: "डेमो रीसेट करें",
-      exportProgress: "प्रमाणपत्र डाउनलोड करें",
-    },
-    onboarding: {
-      step1Title: "लर्नकोपरगांव में आपका स्वागत है!",
-      step1Subtitle: "व्यक्तिगत अनुभव के लिए अपने छात्र का प्रकार चुनें।",
-      step2Title: "कक्षा या स्ट्रीम चुनें",
-      step2Subtitle: "हम आपकी कक्षा के अनुसार चुनौतियों को अनुकूलित करते हैं।",
-      step3Title: "पसंदीदा भाषा चुनें",
-      step3Subtitle: "आप पाठ के दौरान किसी भी समय भाषा बदल सकते हैं।",
-      step4Title: "आपकी सीखने की रुचियां क्या हैं?",
-      step4Subtitle: "वे विषय चुनें जिन्हें आप गहराई से सीखना चाहते हैं।",
-      schoolStudent: "स्कूली छात्र (कक्षा 1–12)",
-      undergradStudent: "स्नातक छात्र (कॉलेज)",
-      finishButton: "डैशबोर्ड शुरू करें 🚀",
-      nextButton: "अगला चरण →",
-      backButton: "← वापस",
     },
     lesson: {
-      learnTab: "1. अवधारणा सीखें",
-      thinkTab: "2. विचार करें",
-      playTab: "3. इंटरैक्टिव खेल",
-      challengeTab: "4. मिशन चेकपॉइंट",
-      nextStep: "अगला चरण →",
-      prevStep: "← पिछला",
-      finishMission: "मिशन पूरा करें 🎉",
-      correctAnswer: "शानदार! सही उत्तर +25 XP",
-      tryAgain: "उत्तर सही नहीं है। संकेत पढ़ें और पुनः प्रयास करें!",
-      missionCompleted: "मिशन सफलतापूर्वक पूरा हुआ 🏆",
-      badgeUnlocked: "नया बैज अनलॉक हुआ!",
-      xpEarnedNotice: "अर्जित XP",
-      runCode: "▶ कोड चलाएं",
-      resetCode: "↺ कोड रीसेट करें",
-      codeSuccess: "कोड सफलतापूर्वक चला! सभी परीक्षण उत्तीर्ण।",
-      codeError: "कोड में त्रुटि मिली। हाइलाइट की गई लाइन जांचें।",
-      verifyAnswer: "उत्तर जांचें",
-      backToDashboard: "डैशबोर्ड पर वापस जाएं",
+      checkpoints: "पाठ रूपरेखा",
+      stepCount: "चेकपॉइंट",
+      checkAnswer: "उत्तर जांचें",
+      correctNotification: "+25 XP · बहुत बढ़िया!",
+      tryAgainNotification: "उत्तर सही नहीं है। संकेत देखें और पुनः प्रयास करें!",
+      nextCheckpoint: "अगला चेकपॉइंट →",
+      finishLesson: "पाठ पूरा करें 🎉",
+      completedTitle: "चेकपॉइंट पूरा हुआ!",
+      completedDesc: "आपने इस पाठ के सभी इंटरैक्टिव चेकपॉइंट सफलतापूर्वक पूरे कर लिए हैं।",
+      backToCourse: "डैशबोर्ड पर वापस जाएं",
     },
   },
 };

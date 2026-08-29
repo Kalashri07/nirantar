@@ -1,17 +1,18 @@
 import React from 'react';
 import {
   Award,
-  Lock,
   CheckCircle2,
+  Lock,
+  Star,
   Flame,
   Zap,
   WifiOff,
   Terminal,
   ShieldCheck,
   Telescope,
-  TrendingUp,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import type { BadgeItem } from '../types';
 
 export const AchievementsView: React.FC = () => {
   const { badges, language, t, userProfile } = useApp();
@@ -35,132 +36,116 @@ export const AchievementsView: React.FC = () => {
     }
   };
 
-  const unlockedCount = badges.filter((b) => b.isUnlocked).length;
+  const unlockedBadges = badges.filter((b) => b.isUnlocked);
+  const lockedBadges = badges.filter((b) => !b.isUnlocked);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-150 max-w-5xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-8 max-w-5xl mx-auto py-2">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
-            Student Achievements
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">{t.achievements.title}</h1>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">{t.achievements.subtitle}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            {t.achievements.title}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">{t.achievements.subtitle}</p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center font-bold text-sm">
-            <Award className="w-5 h-5" />
+        <div className="flex items-center gap-3 bg-white border border-slate-200/90 rounded-2xl px-4 py-2.5 shadow-2xs self-start">
+          <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <Award className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs text-slate-400 font-semibold block">Badges Collected</span>
-            <span className="text-base font-black text-slate-900">
-              {unlockedCount} of {badges.length} Unlocked
+            <span className="text-xs font-bold text-slate-900 block">
+              {unlockedBadges.length} of {badges.length} Unlocked
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium">
+              Total Points: {userProfile.currentXp} XP
             </span>
           </div>
         </div>
       </div>
 
-      {/* Badges Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {badges.map((badge) => {
-          const Icon = getBadgeIcon(badge.icon);
-          const isUnlocked = badge.isUnlocked;
+      {/* 1. Recently Earned Badges */}
+      <div className="space-y-3">
+        <h2 className="text-base font-bold text-slate-900">{t.achievements.recentEarned}</h2>
 
-          return (
-            <div
-              key={badge.id}
-              className={`p-6 rounded-3xl border transition-all flex flex-col justify-between ${
-                isUnlocked
-                  ? 'bg-white border-amber-300 shadow-sm'
-                  : 'bg-slate-50 border-slate-200 opacity-60'
-              }`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-2xs ${
-                      isUnlocked
-                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                        : 'bg-slate-200 text-slate-400'
-                    }`}
-                  >
-                    <Icon className="w-6 h-6" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {unlockedBadges.map((badge) => {
+            const Icon = getBadgeIcon(badge.icon);
+            return (
+              <div
+                key={badge.id}
+                className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                      ✓ {t.achievements.unlocked}
+                    </span>
                   </div>
 
-                  <span
-                    className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                      badge.rarity === 'Legendary'
-                        ? 'bg-purple-100 text-purple-800'
-                        : badge.rarity === 'Epic'
-                        ? 'bg-rose-100 text-rose-800'
-                        : badge.rarity === 'Rare'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {badge.rarity}
-                  </span>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {badge.title[language]}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      {badge.description[language]}
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-base font-black text-slate-900 flex items-center gap-1.5">
-                    <span>{badge.title[language]}</span>
-                    {!isUnlocked && <Lock className="w-3.5 h-3.5 text-slate-400" />}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    {badge.description[language]}
-                  </p>
+                <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>{badge.category}</span>
+                  <span>{badge.unlockedAt || 'Earned'}</span>
                 </div>
               </div>
-
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-[11px] text-slate-400">Category: {badge.category}</span>
-                {isUnlocked ? (
-                  <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Unlocked ({badge.unlockedAt})
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-slate-400 font-semibold">Locked 🔒</span>
-                )}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Simple XP Milestones */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
-            <span>{t.achievements.xpHistory}</span>
-          </h2>
-          <span className="text-xs font-mono font-bold text-emerald-700">Total: {userProfile.currentXp} XP</span>
-        </div>
+      {/* 2. In-Progress & Locked Badges */}
+      <div className="space-y-3 pt-2">
+        <h2 className="text-base font-bold text-slate-900">{t.achievements.locked}</h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-            <span className="text-[11px] text-slate-400 block font-semibold">Today</span>
-            <span className="text-lg font-black text-emerald-700">+140 XP</span>
-            <span className="text-[10px] text-slate-500 block">Physics Lesson</span>
-          </div>
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-            <span className="text-[11px] text-slate-400 block font-semibold">Yesterday</span>
-            <span className="text-lg font-black text-emerald-700">+220 XP</span>
-            <span className="text-[10px] text-slate-500 block">Chemistry Lab</span>
-          </div>
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-            <span className="text-[11px] text-slate-400 block font-semibold">Streak Bonus</span>
-            <span className="text-lg font-black text-amber-700">+150 XP</span>
-            <span className="text-[10px] text-slate-500 block">6-Day Streak</span>
-          </div>
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-            <span className="text-[11px] text-slate-400 block font-semibold">Offline Syncs</span>
-            <span className="text-lg font-black text-teal-700">+420 XP</span>
-            <span className="text-[10px] text-slate-500 block">Saved Quizzes</span>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {lockedBadges.map((badge) => {
+            const Icon = getBadgeIcon(badge.icon);
+            return (
+              <div
+                key={badge.id}
+                className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between opacity-80"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
+                      <Lock className="w-3 h-3" />
+                      <span>{t.achievements.locked}</span>
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-700">
+                      {badge.title[language]}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      {badge.description[language]}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 mt-3 border-t border-slate-200/60 text-[11px] text-slate-400">
+                  <span>{badge.category}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
