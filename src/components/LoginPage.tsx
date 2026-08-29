@@ -52,15 +52,6 @@ export const LoginPage: React.FC = () => {
     loginUser(emailOrUsername);
   };
 
-  const handleDemoLogin = () => {
-    setEmailOrUsername('demo@nirantar.app');
-    setPassword('demo123');
-    setSuccessMessage('Logging in with Demo Account...');
-    setTimeout(() => {
-      loginUser('Learner');
-    }, 400);
-  };
-
   const handleContinueOffline = () => {
     loginUser();
   };
@@ -205,7 +196,7 @@ export const LoginPage: React.FC = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => alert('Demo prototype: Use password "demo123" or click Login with Demo Account.')}
+                  onClick={() => alert('Password reset instructions will be sent to your registered email.')}
                   className="text-[11px] text-[#675E54] hover:text-[#102A43]"
                 >
                   {t.login.forgotPassword}
@@ -254,30 +245,6 @@ export const LoginPage: React.FC = () => {
               className="w-full py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] text-[#102A43] font-bold text-xs rounded-xl border border-[#D8CABA] transition-colors"
             >
               {t.login.createAccount}
-            </button>
-          </div>
-
-          {/* Demo Account Box */}
-          <div className="p-3.5 bg-[#E9DDCB]/70 border border-[#D8CABA] rounded-xl text-xs space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[#102A43] uppercase tracking-wider text-[10px]">
-                {t.login.demoAccountTitle}
-              </span>
-              <span className="text-[10px] text-[#675E54]">Instant Access</span>
-            </div>
-
-            <div className="text-[11px] text-[#675E54] font-mono space-y-0.5">
-              <div>Username: <strong className="text-[#102A43]">demo@nirantar.app</strong></div>
-              <div>Password: <strong className="text-[#102A43]">demo123</strong></div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="w-full py-2 bg-[#102A43] hover:bg-[#0C1F33] text-white font-bold text-xs rounded-lg shadow-2xs transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
-            >
-              <Sparkles className="w-3 h-3" />
-              <span>{t.login.demoBtn}</span>
             </button>
           </div>
 
