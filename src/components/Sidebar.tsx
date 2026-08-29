@@ -6,15 +6,13 @@ import {
   Target,
   Award,
   User,
-  Zap,
-  WifiOff,
   Trophy,
   Swords,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const Sidebar: React.FC = () => {
-  const { currentNav, setCurrentNav, t, connectivityMode, setConnectivityMode } = useApp();
+  const { currentNav, setCurrentNav, t } = useApp();
 
   const navItems = [
     {
@@ -109,38 +107,11 @@ export const Sidebar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Bottom Sidebar Status */}
-        <div className="pt-4 border-t border-[#1C3B5E]">
-          <button
-            onClick={() => {
-              const nextMode =
-                connectivityMode === 'online'
-                  ? 'low_data'
-                  : connectivityMode === 'low_data'
-                  ? 'offline'
-                  : 'online';
-              setConnectivityMode(nextMode);
-            }}
-            className="w-full p-2.5 rounded-xl bg-[#0C1F33] hover:bg-[#15324F] border border-[#1C3B5E] flex items-center justify-between text-left transition-colors"
-            title="Click to toggle network simulation mode"
-          >
-            <div className="flex items-center gap-2">
-              {connectivityMode === 'online' && (
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-950" />
-              )}
-              {connectivityMode === 'low_data' && (
-                <Zap className="w-3.5 h-3.5 text-[#C9B69C]" />
-              )}
-              {connectivityMode === 'offline' && (
-                <WifiOff className="w-3.5 h-3.5 text-rose-400" />
-              )}
-              <span className="text-xs font-medium text-[#E2E9F0]">
-                {connectivityMode === 'online' && t.connectivity.connected}
-                {connectivityMode === 'low_data' && t.connectivity.lowData}
-                {connectivityMode === 'offline' && t.connectivity.offlineAvailable}
-              </span>
-            </div>
-          </button>
+        {/* Bottom Sidebar Info */}
+        <div className="pt-4 border-t border-[#1C3B5E] text-center">
+          <p className="text-[11px] text-[#BAC7D5]">
+            Continuous offline learning
+          </p>
         </div>
       </aside>
 

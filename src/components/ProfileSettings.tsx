@@ -3,24 +3,32 @@ import {
   User,
   GraduationCap,
   Globe,
-  Zap,
   HardDrive,
+  CheckCircle2,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { SUPPORTED_EDUCATION_LEVELS } from '../data/mockData';
 
 export const ProfileSettings: React.FC = () => {
   const {
     userProfile,
+    setUserProfile,
     language,
     setLanguage,
-    connectivityMode,
-    setConnectivityMode,
     pendingSyncQueue,
     resetAllDemoState,
     t,
   } = useApp();
 
-  const isLowData = connectivityMode === 'low_data';
+  const handleEducationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLevel = e.target.value;
+    const isSchool = selectedLevel.includes('Standard');
+    setUserProfile((prev) => ({
+      ...prev,
+      gradeOrStream: selectedLevel,
+      learnerType: isSchool ? 'school' : 'undergrad',
+    }));
+  };
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto py-2">
@@ -41,7 +49,7 @@ export const ProfileSettings: React.FC = () => {
           <div>
             <h2 className="text-lg font-bold text-[#102A43]">{userProfile.name}</h2>
             <p className="text-xs text-[#675E54]">
-              {userProfile.gradeOrStream} · {userProfile.learnerType === 'school' ? 'School Student' : 'Undergraduate Scholar'}
+              {userProfile.gradeOrStream} · {userProfile.learnerType === 'school' ? 'School Student' : 'Higher Education Scholar'}
             </p>
             <span className="text-[11px] font-semibold text-[#102A43] mt-1 inline-block">
               Level {userProfile.level} ({userProfile.levelTitle[language]}) · {userProfile.currentXp.toLocaleString()} XP
@@ -50,23 +58,42 @@ export const ProfileSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Education & Language Preferences */}
+      {/* 2. Education Level & Language Preferences */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Education Details */}
+        {/* Education Details & Selector */}
         <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs space-y-3">
           <div className="flex items-center gap-2 text-[#102A43]">
             <GraduationCap className="w-4 h-4 text-[#102A43]" />
             <h3 className="text-sm font-bold">{t.profile.educationDetails}</h3>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1.5 border-b border-[#D8CABA]">
-              <span className="text-[#675E54]">{t.profile.learnerType}</span>
-              <span className="font-semibold text-[#102A43] capitalize">{userProfile.learnerType}</span>
+          <div className="space-y-3 pt-1 text-xs">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#675E54] block">
+                Select Your Educational Level:
+              </label>
+              <select
+                value={userProfile.gradeOrStream}
+                onChange={handleEducationChange}
+                className="w-full bg-[#E9DDCB] border border-[#D8CABA] text-[#102A43] font-medium rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#102A43]"
+              >
+                {SUPPORTED_EDUCATION_LEVELS.map((group) => (
+                  <optgroup key={group.category} label={`--- ${group.category} ---`}>
+                    {group.options.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-[#D8CABA]">
-              <span className="text-[#675E54]">{t.profile.gradeStream}</span>
-              <span className="font-semibold text-[#102A43]">{userProfile.gradeOrStream}</span>
+
+            <div className="flex justify-between py-1.5 border-t border-[#D8CABA] text-[#675E54]">
+              <span>Category:</span>
+              <span className="font-semibold text-[#102A43] capitalize">
+                {userProfile.learnerType === 'school' ? 'School (K-12)' : 'Undergraduate / Higher Ed'}
+              </span>
             </div>
           </div>
         </div>
@@ -78,7 +105,7 @@ export const ProfileSettings: React.FC = () => {
             <h3 className="text-sm font-bold">{t.profile.languagePref}</h3>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2 pt-2">
             {[
               { id: 'en' as const, label: 'English' },
               { id: 'mr' as const, label: 'मराठी' },
@@ -97,45 +124,14 @@ export const ProfileSettings: React.FC = () => {
               </button>
             ))}
           </div>
+
+          <p className="text-[11px] text-[#675E54] pt-1">
+            Multilingual curriculum and interface available across English, Marathi, and Hindi.
+          </p>
         </div>
       </div>
 
-      {/* 3. Low Data Mode & Savings */}
-      <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#9E6B20]" />
-              <h3 className="text-sm font-bold text-[#102A43]">{t.profile.dataSaverTitle}</h3>
-              <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  isLowData ? 'bg-[#F7EED8] text-[#7C5113] border border-[#E8D2A2]' : 'bg-[#E9DDCB] text-[#675E54] border border-[#D8CABA]'
-                }`}
-              >
-                {isLowData ? 'Enabled' : 'Off'}
-              </span>
-            </div>
-            <p className="text-xs text-[#675E54]">{t.profile.dataSaverDesc}</p>
-          </div>
-
-          <button
-            onClick={() => setConnectivityMode(isLowData ? 'online' : 'low_data')}
-            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors ${
-              isLowData
-                ? 'bg-[#E9DDCB] text-[#675E54] hover:bg-[#E2D4BF] border border-[#D8CABA]'
-                : 'bg-[#102A43] hover:bg-[#0C1F33] text-white shadow-2xs'
-            }`}
-          >
-            {isLowData ? 'Disable Low Data' : 'Enable Low Data'}
-          </button>
-        </div>
-
-        <div className="p-3 bg-[#E9DDCB] rounded-xl text-xs text-[#675E54] border border-[#D8CABA]">
-          <span>{t.profile.dataSavedEstimate}</span>
-        </div>
-      </div>
-
-      {/* 4. Local Storage & Sync Queue */}
+      {/* 3. Local Storage & Sync Queue */}
       <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -143,7 +139,7 @@ export const ProfileSettings: React.FC = () => {
             <h3 className="text-sm font-bold text-[#102A43]">{t.profile.offlineSyncTitle}</h3>
           </div>
           <span className="text-xs text-[#675E54]">
-            {pendingSyncQueue.length} items queued for sync
+            {pendingSyncQueue.length} items queued for background sync
           </span>
         </div>
 

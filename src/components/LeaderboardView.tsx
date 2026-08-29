@@ -73,7 +73,55 @@ export const LeaderboardView: React.FC = () => {
         </button>
       </div>
 
-      {/* 1. Filter Controls */}
+      {/* 1. YOUR POSITION CARD (MOVED TO TOP) */}
+      <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#E9DDCB] border border-[#D8CABA] flex items-center justify-center text-[#102A43] text-lg font-bold">
+              🏅
+            </div>
+            <div>
+              <span className="text-xs font-bold text-[#675E54] uppercase tracking-wider block">
+                {t.leaderboard.yourPositionTitle}
+              </span>
+              <h2 className="text-lg font-bold text-[#102A43]">
+                {t.leaderboard.yourRank} #4 · {userProfile.name}
+              </h2>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs">
+            <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
+              <span className="text-[10px] text-[#675E54] block">Your Score</span>
+              <span className="font-bold text-[#102A43] text-sm">
+                ⭐ {userProfile.currentXp.toLocaleString()} XP
+              </span>
+            </div>
+            <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
+              <span className="text-[10px] text-[#675E54] block">Current Streak</span>
+              <span className="font-bold text-[#102A43] text-sm">
+                🔥 {userProfile.streakDays} Days
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress towards next rank */}
+        <div className="space-y-1.5 pt-2 border-t border-[#D8CABA]">
+          <div className="flex justify-between text-xs text-[#675E54]">
+            <span>{t.leaderboard.pointsNeeded} #3 (Rohan)</span>
+            <span className="font-bold text-[#102A43]">{xpNeeded} XP needed</span>
+          </div>
+          <div className="w-full bg-[#E9DDCB] h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-[#102A43] h-full rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(100, Math.round((userProfile.currentXp / rank3Xp) * 100))}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Filter Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[#FAF6EF] border border-[#D8CABA] p-3 rounded-2xl shadow-2xs">
         {/* Time Tabs */}
         <div className="flex items-center bg-[#E9DDCB] border border-[#D8CABA] p-1 rounded-xl">
@@ -119,7 +167,7 @@ export const LeaderboardView: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Ranked Leaderboard List */}
+      {/* 3. Ranked Leaderboard List */}
       <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl overflow-hidden shadow-2xs">
         <div className="px-5 py-3.5 border-b border-[#D8CABA] bg-[#E9DDCB] grid grid-cols-12 text-[11px] font-bold text-[#675E54] uppercase tracking-wider">
           <div className="col-span-2 sm:col-span-1">{t.leaderboard.rankCol}</div>
@@ -193,54 +241,6 @@ export const LeaderboardView: React.FC = () => {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* 3. YOUR POSITION CARD */}
-      <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#E9DDCB] border border-[#D8CABA] flex items-center justify-center text-[#102A43] text-lg font-bold">
-              🏅
-            </div>
-            <div>
-              <span className="text-xs font-bold text-[#675E54] uppercase tracking-wider block">
-                {t.leaderboard.yourPositionTitle}
-              </span>
-              <h2 className="text-lg font-bold text-[#102A43]">
-                {t.leaderboard.yourRank} #4 · {userProfile.name}
-              </h2>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs">
-            <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
-              <span className="text-[10px] text-[#675E54] block">Your Score</span>
-              <span className="font-bold text-[#102A43] text-sm">
-                ⭐ {userProfile.currentXp.toLocaleString()} XP
-              </span>
-            </div>
-            <div className="p-2.5 bg-[#E9DDCB] border border-[#D8CABA] rounded-xl text-center min-w-[100px]">
-              <span className="text-[10px] text-[#675E54] block">Current Streak</span>
-              <span className="font-bold text-[#102A43] text-sm">
-                🔥 {userProfile.streakDays} Days
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Progress towards next rank */}
-        <div className="space-y-1.5 pt-2 border-t border-[#D8CABA]">
-          <div className="flex justify-between text-xs text-[#675E54]">
-            <span>{t.leaderboard.pointsNeeded} #3 (Rohan)</span>
-            <span className="font-bold text-[#102A43]">{xpNeeded} XP needed</span>
-          </div>
-          <div className="w-full bg-[#E9DDCB] h-2 rounded-full overflow-hidden">
-            <div
-              className="bg-[#102A43] h-full rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(100, Math.round((userProfile.currentXp / rank3Xp) * 100))}%` }}
-            />
-          </div>
         </div>
       </div>
     </div>

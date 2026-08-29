@@ -197,6 +197,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.CHALLENGE_HIST, JSON.stringify(challengeHistory));
   }, [challengeHistory]);
 
+  // Automatic background network listener & auto-sync
+  useEffect(() => {
+    const handleOnline = () => {
+      setConnectivityModeState('online');
+      if (pendingSyncQueue.length > 0) {
+        setIsSyncing(true);
+        const count = pendingSyncQueue.length;
+        setTimeout(() => {
+          setIsSyncing(false);
+          setPendingSyncQueue([]);
+          setSyncSuccessMessage(`✓ ${count} activities synchronized with cloud servers!`);
+          setTimeout(() => setSyncSuccessMessage(null), 4000);
+        }, 1500);
+      }
+    };
+
+    const handleOffline = () => {
+      setConnectivityModeState('offline');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setConnectivityModeState('offline');
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [pendingSyncQueue]);
+
   // Network mode switcher with Auto-Sync engine
   const setConnectivityMode = (newMode: ConnectivityMode) => {
     const prevMode = connectivityMode;

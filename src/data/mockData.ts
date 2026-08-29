@@ -1,9 +1,34 @@
 import type { LearningPack, MissionItem, BadgeItem, UserProfile } from '../types';
 
+export const SUPPORTED_EDUCATION_LEVELS = [
+  // School
+  { category: 'School', options: [
+    '1st Standard', '2nd Standard', '3rd Standard', '4th Standard', '5th Standard',
+    '6th Standard', '7th Standard', '8th Standard', '9th Standard', '10th Standard',
+    '11th Standard', '12th Standard'
+  ]},
+  // BTech
+  { category: 'BTech', options: [
+    'BTech FY', 'BTech SY', 'BTech TY', 'BTech Final Year'
+  ]},
+  // BBA
+  { category: 'BBA', options: [
+    'BBA FY', 'BBA SY', 'BBA TY'
+  ]},
+  // MBA
+  { category: 'MBA', options: [
+    'MBA FY', 'MBA SY'
+  ]},
+  // BCA
+  { category: 'BCA', options: [
+    'BCA FY', 'BCA SY', 'BCA TY'
+  ]},
+];
+
 export const initialUserProfile: UserProfile = {
   name: "Learner",
   learnerType: "school",
-  gradeOrStream: "Class 10",
+  gradeOrStream: "10th Standard",
   interests: ["Science", "Programming", "Physics"],
   preferredLanguage: "en",
   level: 7,

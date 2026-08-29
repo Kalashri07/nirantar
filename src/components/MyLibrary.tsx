@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Download,
   Trash2,
@@ -8,8 +8,11 @@ import {
   Layers,
   ArrowRight,
   BookOpen,
+  AlertTriangle,
+  X,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { LearningPack } from '../types';
 
 export const MyLibrary: React.FC = () => {
   const {
@@ -23,6 +26,8 @@ export const MyLibrary: React.FC = () => {
     t,
   } = useApp();
 
+  const [moduleToDelete, setModuleToDelete] = useState<LearningPack | null>(null);
+
   const downloadedPacks = learningPacks.filter((p) => p.isDownloaded);
   const availablePacks = learningPacks.filter((p) => !p.isDownloaded);
 
@@ -34,6 +39,13 @@ export const MyLibrary: React.FC = () => {
 
   const handleStartLesson = (packId: string) => {
     setActiveLessonPackId(packId);
+  };
+
+  const confirmDelete = () => {
+    if (moduleToDelete) {
+      removeDownloadedPack(moduleToDelete.id);
+      setModuleToDelete(null);
+    }
   };
 
   return (
@@ -125,9 +137,9 @@ export const MyLibrary: React.FC = () => {
 
                 <div className="pt-3 border-t border-[#D8CABA] flex items-center justify-between gap-2">
                   <button
-                    onClick={() => removeDownloadedPack(pack.id)}
+                    onClick={() => setModuleToDelete(pack)}
                     className="p-2 rounded-lg text-rose-700 hover:bg-rose-50 transition-colors"
-                    title={t.library.removeAction}
+                    title="Remove module from offline library"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -183,6 +195,49 @@ export const MyLibrary: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Delete Confirmation Modal */}
+      {moduleToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-100">
+          <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <button
+                onClick={() => setModuleToDelete(null)}
+                className="p-1 rounded-lg text-[#675E54] hover:text-[#102A43] hover:bg-[#E9DDCB]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-[#102A43]">
+                Remove this module?
+              </h3>
+              <p className="text-xs text-[#675E54] leading-relaxed">
+                Are you sure you want to remove <strong>{moduleToDelete.title[language]}</strong> from your offline library? You can download it again whenever an internet connection is available.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[#D8CABA]">
+              <button
+                onClick={() => setModuleToDelete(null)}
+                className="px-4 py-2 bg-[#E9DDCB] hover:bg-[#E2D4BF] text-[#102A43] text-xs font-semibold rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold rounded-xl shadow-2xs transition-colors"
+              >
+                Remove Module
+              </button>
+            </div>
           </div>
         </div>
       )}

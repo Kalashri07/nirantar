@@ -10,6 +10,7 @@ import {
   Star,
   Layers,
   Sparkles,
+  TrendingUp,
   X,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -30,8 +31,8 @@ export const LessonWorkspace: React.FC = () => {
   const pack = learningPacks.find((p) => p.id === activeLessonPackId);
   const lessonData = activeLessonPackId ? detailedLessons[activeLessonPackId] : undefined;
 
-  // Active Tab: 'lesson' | 'gamification'
-  const [activeTab, setActiveTab] = useState<'lesson' | 'gamification'>('lesson');
+  // Active Tab: 'lesson' | 'progress'
+  const [activeTab, setActiveTab] = useState<'lesson' | 'progress'>('lesson');
 
   // Step state
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
@@ -67,7 +68,6 @@ export const LessonWorkspace: React.FC = () => {
   const isOffline = connectivityMode === 'offline';
 
   const handleSelectOption = (optId: string) => {
-    if (hasSubmitted && isCurrentModuleDone) return;
     setSelectedOptionId(optId);
     setHasSubmitted(false);
   };
@@ -76,14 +76,16 @@ export const LessonWorkspace: React.FC = () => {
     if (!currentModule) return;
 
     if (!currentModule.hasQuestion) {
-      setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
-      triggerCelebration();
-      recordStepCompletion(
-        pack.id,
-        currentModule.id,
-        currentModule.xpReward,
-        currentModule.title[language]
-      );
+      if (!moduleCompletedMap[currentModuleIndex]) {
+        setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
+        triggerCelebration();
+        recordStepCompletion(
+          pack.id,
+          currentModule.id,
+          currentModule.xpReward,
+          currentModule.title[language]
+        );
+      }
       return;
     }
 
@@ -92,14 +94,16 @@ export const LessonWorkspace: React.FC = () => {
     setHasSubmitted(true);
 
     if (option?.isCorrect) {
-      setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
-      triggerCelebration();
-      recordStepCompletion(
-        pack.id,
-        currentModule.id,
-        currentModule.xpReward,
-        currentModule.title[language]
-      );
+      if (!moduleCompletedMap[currentModuleIndex]) {
+        setModuleCompletedMap((prev) => ({ ...prev, [currentModuleIndex]: true }));
+        triggerCelebration();
+        recordStepCompletion(
+          pack.id,
+          currentModule.id,
+          currentModule.xpReward,
+          currentModule.title[language]
+        );
+      }
     }
   };
 
@@ -122,7 +126,13 @@ export const LessonWorkspace: React.FC = () => {
     }
   };
 
-  // Gamification earned XP calculation
+  const handleSelectCheckpoint = (idx: number) => {
+    setCurrentModuleIndex(idx);
+    setSelectedOptionId(null);
+    setHasSubmitted(false);
+  };
+
+  // Progress earned XP calculation
   const earnedXp = lessonData.modules.reduce((sum, m, idx) => {
     return moduleCompletedMap[idx] ? sum + m.xpReward : sum;
   }, 0);
@@ -170,7 +180,7 @@ export const LessonWorkspace: React.FC = () => {
             </div>
           </div>
 
-          {/* TAB NAVIGATION: 📖 LESSON vs 🎮 GAMIFICATION */}
+          {/* TAB NAVIGATION: 📖 LESSON vs 📈 PROGRESS */}
           <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
             <div className="bg-[#F3EBDD] p-1 rounded-xl flex items-center gap-1 border border-[#D8CABA]">
               <button
@@ -181,19 +191,19 @@ export const LessonWorkspace: React.FC = () => {
                     : 'text-[#675E54] hover:text-[#102A43]'
                 }`}
               >
-                <span>📖</span>
+                <BookOpen className="w-3.5 h-3.5" />
                 <span>LESSON</span>
               </button>
               <button
-                onClick={() => setActiveTab('gamification')}
+                onClick={() => setActiveTab('progress')}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'gamification'
+                  activeTab === 'progress'
                     ? 'bg-[#102A43] text-white shadow-2xs font-bold'
                     : 'text-[#675E54] hover:text-[#102A43]'
                 }`}
               >
-                <span>🎮</span>
-                <span>GAMIFICATION</span>
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>PROGRESS</span>
               </button>
             </div>
 
@@ -245,7 +255,7 @@ export const LessonWorkspace: React.FC = () => {
               </div>
 
               <div className="p-3 bg-[#DCEFE5] text-[#1E573E] text-xs font-bold rounded-xl border border-[#B6DEC9]">
-                100% Complete · Local Progress Saved Locally
+                100% Complete · Progress Saved on Device
               </div>
 
               <button
@@ -255,22 +265,22 @@ export const LessonWorkspace: React.FC = () => {
                 <span>Continue Learning →</span>
               </button>
             </div>
-          ) : activeTab === 'gamification' ? (
+          ) : activeTab === 'progress' ? (
 
             /* =========================================================
-               TAB B: 🎮 DEDICATED GAMIFICATION VIEW
+               TAB B: 📈 DEDICATED PROGRESS VIEW
                ========================================================= */
             <div className="space-y-6 max-w-2xl mx-auto">
-              {/* Gamification Header */}
+              {/* Progress Header */}
               <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-[#E9DDCB] border border-[#D8CABA] flex items-center justify-center text-[#102A43]">
-                      <Sparkles className="w-5 h-5" />
+                      <TrendingUp className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-base font-bold text-[#102A43]">🎮 {pack.title[language]}</h2>
-                      <span className="text-xs text-[#675E54] font-medium">Lesson Gamification Hub</span>
+                      <h2 className="text-base font-bold text-[#102A43]">{pack.title[language]}</h2>
+                      <span className="text-xs text-[#675E54] font-medium">Learning Progress Overview</span>
                     </div>
                   </div>
                   <span className="text-xs font-bold text-[#102A43] bg-[#E9DDCB] px-3 py-1 rounded-full border border-[#D8CABA]">
@@ -278,10 +288,10 @@ export const LessonWorkspace: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Your Progress */}
+                {/* Progress Bar */}
                 <div className="space-y-1.5 pt-2">
                   <div className="flex justify-between text-xs font-semibold text-[#102A43]">
-                    <span>Your Progress</span>
+                    <span>Module Progress</span>
                     <span>{progressPct}%</span>
                   </div>
                   <div className="w-full bg-[#E9DDCB] h-2.5 rounded-full overflow-hidden">
@@ -299,14 +309,14 @@ export const LessonWorkspace: React.FC = () => {
                 <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs space-y-2">
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-[#102A43]" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#675E54]">Badge Progress</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#675E54]">Badge Milestone</h3>
                   </div>
                   <div className="pt-1">
                     <span className="text-sm font-bold text-[#102A43] block">
                       🏅 {lessonData.badgeName}
                     </span>
                     <p className="text-xs text-[#675E54] mt-0.5">
-                      Progress: {completedCount} / {totalModules} checkpoints completed
+                      {completedCount} / {totalModules} checkpoints completed
                     </p>
                   </div>
                 </div>
@@ -315,22 +325,22 @@ export const LessonWorkspace: React.FC = () => {
                 <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-5 shadow-2xs space-y-2">
                   <div className="flex items-center gap-2">
                     <Flame className="w-4 h-4 text-[#9E6B20]" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#675E54]">Streak</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#675E54]">Daily Streak</h3>
                   </div>
                   <div className="pt-1">
                     <span className="text-sm font-bold text-[#102A43] block flex items-center gap-1.5">
                       🔥 {userProfile.streakDays} Day Learning Streak
                     </span>
                     <p className="text-xs text-[#675E54] mt-0.5">
-                      Daily habit maintained across offline sessions
+                      Maintained across offline and online study sessions
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Mission Checkpoints List */}
+              {/* Checkpoints Checklist */}
               <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 shadow-2xs space-y-4">
-                <h3 className="text-sm font-bold text-[#102A43]">Mission Checkpoints</h3>
+                <h3 className="text-sm font-bold text-[#102A43]">Checkpoints Status</h3>
 
                 <div className="divide-y divide-[#D8CABA] text-xs">
                   {lessonData.modules.map((mod, idx) => {
@@ -368,7 +378,7 @@ export const LessonWorkspace: React.FC = () => {
           ) : (
 
             /* =========================================================
-               TAB A: 📖 DEDICATED WRITTEN LESSON VIEW
+               TAB A: 📖 DEDICATED WRITTEN LESSON & QUIZ VIEW
                ========================================================= */
             <div className="space-y-6 max-w-2xl mx-auto">
               
@@ -380,11 +390,7 @@ export const LessonWorkspace: React.FC = () => {
                   return (
                     <button
                       key={mod.id}
-                      onClick={() => {
-                        setCurrentModuleIndex(idx);
-                        setSelectedOptionId(null);
-                        setHasSubmitted(false);
-                      }}
+                      onClick={() => handleSelectCheckpoint(idx)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                         isActive
                           ? 'bg-[#102A43] text-white'
@@ -400,7 +406,7 @@ export const LessonWorkspace: React.FC = () => {
                 })}
               </div>
 
-              {/* Active Written Module Card */}
+              {/* Active Written Module & Quiz Card */}
               {currentModule && (
                 <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 sm:p-8 shadow-2xs space-y-6">
                   
@@ -448,12 +454,12 @@ export const LessonWorkspace: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Quick Check Question (if module has question) */}
+                  {/* Quick Check Quiz Question (Never pre-selected automatically) */}
                   {currentModule.hasQuestion && currentModule.question && currentModule.options && (
                     <div className="space-y-4 pt-4 border-t border-[#D8CABA]">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xs font-bold uppercase tracking-wider text-[#675E54]">
-                          Quick Check
+                          Quick Check Question
                         </h3>
                         <span className="text-xs font-bold text-[#102A43] bg-[#E9DDCB] px-2 py-0.5 rounded">
                           +{currentModule.xpReward} XP
@@ -464,6 +470,7 @@ export const LessonWorkspace: React.FC = () => {
                         {currentModule.question[language]}
                       </p>
 
+                      {/* Options List */}
                       <div className="space-y-2.5">
                         {currentModule.options.map((opt) => {
                           const isSelected = selectedOptionId === opt.id;
@@ -482,8 +489,9 @@ export const LessonWorkspace: React.FC = () => {
                           return (
                             <button
                               key={opt.id}
+                              type="button"
                               onClick={() => handleSelectOption(opt.id)}
-                              className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${style}`}
+                              className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between cursor-pointer ${style}`}
                             >
                               <span>{opt.text[language]}</span>
                               {(hasSubmitted || isCurrentModuleDone) && opt.isCorrect && (
@@ -495,7 +503,7 @@ export const LessonWorkspace: React.FC = () => {
                       </div>
 
                       {/* Feedback banner */}
-                      {hasSubmitted && (
+                      {hasSubmitted && selectedOptionId && (
                         <div
                           className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
                             isCurrentModuleDone
@@ -504,7 +512,7 @@ export const LessonWorkspace: React.FC = () => {
                           }`}
                         >
                           <span className="font-bold block mb-0.5">
-                            {isCurrentModuleDone ? '✓ Correct! +XP Awarded' : '⚠️ Try again'}
+                            {isCurrentModuleDone ? '✓ Correct Answer! +XP Saved' : '⚠️ Try again'}
                           </span>
                           <span>
                             {
@@ -518,7 +526,7 @@ export const LessonWorkspace: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Actions & Next Module Button */}
+                  {/* Actions & Next Module Navigation */}
                   <div className="pt-6 border-t border-[#D8CABA] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <button
                       onClick={handlePrevModule}
@@ -526,7 +534,7 @@ export const LessonWorkspace: React.FC = () => {
                       className="px-4 py-2 rounded-xl border border-[#D8CABA] bg-[#E9DDCB] hover:bg-[#E2D4BF] disabled:opacity-30 text-xs font-semibold text-[#102A43] flex items-center justify-center gap-1.5"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
-                      <span>Previous Module</span>
+                      <span>Previous Checkpoint</span>
                     </button>
 
                     <div>
@@ -534,19 +542,19 @@ export const LessonWorkspace: React.FC = () => {
                         <button
                           onClick={handleVerifyAnswer}
                           disabled={currentModule.hasQuestion && !selectedOptionId}
-                          className="w-full sm:w-auto px-6 py-2.5 bg-[#102A43] hover:bg-[#0C1F33] disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-xs transition-all"
+                          className="w-full sm:w-auto px-6 py-2.5 bg-[#102A43] hover:bg-[#0C1F33] disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
                         >
-                          {currentModule.hasQuestion ? 'Check Answer & Earn XP' : 'Mark as Complete →'}
+                          {currentModule.hasQuestion ? 'Check Answer & Earn XP' : 'Mark Checkpoint Complete →'}
                         </button>
                       ) : (
                         <button
                           onClick={handleNextModule}
-                          className="w-full sm:w-auto px-6 py-2.5 bg-[#102A43] hover:bg-[#0C1F33] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2"
+                          className="w-full sm:w-auto px-6 py-2.5 bg-[#102A43] hover:bg-[#0C1F33] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <span>
                             {currentModuleIndex === totalModules - 1
                               ? 'Finish Lesson →'
-                              : 'Next Module →'}
+                              : 'Next Checkpoint →'}
                           </span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
