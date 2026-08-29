@@ -50,11 +50,5 @@ export const MainLayout: React.FC = () => {
 };
 
 export default function App() {
-  const { isAuthenticated } = useApp();
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
   return <MainLayout />;
 }

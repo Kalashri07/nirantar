@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import type { User } from 'firebase/auth';
 import type {
   Language,
   ConnectivityMode,
@@ -14,6 +15,7 @@ import type {
 import { translations, type Translations } from '../data/translations';
 import { initialUserProfile, learningPacks as initialPacks, mockMissions, mockBadges } from '../data/mockData';
 import { defaultActiveChallenge, mockChallengeHistory } from '../data/mockLeaderboardData';
+import { initializeAnonymousAuth, onAuthStatusChange } from '../firebase/authService';
 
 interface AppContextType {
   language: Language;
@@ -55,6 +57,7 @@ interface AppContextType {
   completeActiveChallenge: () => void;
   claimChallengeBonusXp: () => void;
   // Auth state
+  firebaseUser: User | null;
   isAuthenticated: boolean;
   hasPreviouslyLoggedIn: boolean;
   loginUser: (userNameOrEmail?: string) => void;
@@ -150,6 +153,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   // 8. Authentication State
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.AUTH);
     return saved === 'true';
@@ -159,6 +164,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(STORAGE_KEYS.HAS_LOGGED_IN);
     return saved === 'true';
   });
+
+  // Initialize Anonymous Firebase Auth on Startup
+  useEffect(() => {
+    const unsubscribe = onAuthStatusChange((user) => {
+      setFirebaseUser(user);
+      if (user) {
+        setIsAuthenticated(true);
+        setHasPreviouslyLoggedIn(true);
+        localStorage.setItem(STORAGE_KEYS.AUTH, 'true');
+        localStorage.setItem(STORAGE_KEYS.HAS_LOGGED_IN, 'true');
+      }
+    });
+
+    // Check existing or sign in anonymously without blocking offline usage
+    initializeAnonymousAuth().then((user) => {
+      if (user) {
+        setFirebaseUser(user);
+        setIsAuthenticated(true);
+        setHasPreviouslyLoggedIn(true);
+        localStorage.setItem(STORAGE_KEYS.AUTH, 'true');
+        localStorage.setItem(STORAGE_KEYS.HAS_LOGGED_IN, 'true');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const loginUser = (userNameOrEmail?: string) => {
     setIsAuthenticated(true);
@@ -238,6 +269,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     const handleOnline = () => {
       setConnectivityModeState('online');
+      if (!firebaseUser) {
+        initializeAnonymousAuth().then((user) => {
+          if (user) setFirebaseUser(user);
+        });
+      }
       if (pendingSyncQueue.length > 0) {
         setIsSyncing(true);
         const count = pendingSyncQueue.length;
@@ -603,6 +639,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         startFriendChallenge,
         completeActiveChallenge,
         claimChallengeBonusXp,
+        firebaseUser,
         isAuthenticated,
         hasPreviouslyLoggedIn,
         loginUser,
