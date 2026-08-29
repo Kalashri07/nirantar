@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-import { BookOpen, Eye, EyeOff, WifiOff, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { BookOpen, Eye, EyeOff, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 
-interface LoginPageProps {
-  onSwitchToSignup: () => void;
+interface SignupPageProps {
+  onSwitchToLogin: () => void;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
-  const { signIn, isConfigured } = useAuth();
+export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
+  const { signUp, isConfigured } = useAuth();
   const { language, setLanguage, t, connectivityMode } = useApp();
 
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -22,30 +24,48 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
 
   const isOffline = connectivityMode === 'offline';
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const validateForm = (): boolean => {
+    if (!fullName.trim()) {
+      setErrorMessage('Please enter your full name.');
+      return false;
+    }
+    if (!email.trim()) {
+      setErrorMessage('Please enter your email address.');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
+      return false;
+    }
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please re-enter.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
 
     if (isOffline) {
-      setErrorMessage('Initial sign-in requires an active internet connection.');
+      setErrorMessage('Creating an account requires an active internet connection.');
       return;
     }
 
-    if (!email.trim()) {
-      setErrorMessage('Please enter your email.');
-      return;
-    }
-
-    if (!password.trim()) {
-      setErrorMessage('Please enter your password.');
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      const res = await signIn({
+      const res = await signUp({
+        name: fullName.trim(),
         email: email.trim(),
         password,
       });
@@ -53,10 +73,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
       if (res.error) {
         setErrorMessage(res.error);
       } else {
-        setSuccessMessage('Welcome back! Loading your dashboard...');
+        setSuccessMessage('Account created successfully! You can now sign in or continue.');
       }
     } catch (err: any) {
-      setErrorMessage(err?.message || 'An unexpected error occurred during sign in.');
+      setErrorMessage(err?.message || 'An unexpected error occurred during registration.');
     } finally {
       setIsSubmitting(false);
     }
@@ -94,19 +114,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
         </div>
       </header>
 
-      {/* Main Login Card */}
+      {/* Main Registration Card */}
       <main className="max-w-md w-full mx-auto my-6">
         <div className="bg-[#FAF6EF] border border-[#D8CABA] rounded-2xl p-6 sm:p-8 shadow-xs space-y-5">
-          {/* Welcoming Header */}
+          {/* Title Area */}
           <div className="text-center space-y-1.5">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#102A43] text-white mb-2 shadow-xs">
               <BookOpen className="w-6 h-6 text-[#F3EBDD]" />
             </div>
             <h1 className="text-2xl font-black tracking-tight text-[#102A43]">
-              Welcome Back
+              Create Your Account
             </h1>
-            <p className="text-xs text-[#675E54] leading-relaxed">
-              Learning that continues, even when connectivity doesn't.
+            <p className="text-xs text-[#675E54]">
+              Join Nirantar and start learning with resilient offline progress.
             </p>
           </div>
 
@@ -117,19 +137,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
               <div className="text-[11px] leading-relaxed">
                 <strong>Supabase credentials not detected:</strong> Please set <code className="font-mono bg-amber-100 px-1 py-0.5 rounded">VITE_SUPABASE_URL</code> and <code className="font-mono bg-amber-100 px-1 py-0.5 rounded">VITE_SUPABASE_ANON_KEY</code> in your environment.
               </div>
-            </div>
-          )}
-
-          {/* Offline warning indicator */}
-          {isOffline && (
-            <div className="p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl space-y-1">
-              <div className="flex items-center gap-2 font-bold text-xs">
-                <WifiOff className="w-4 h-4 text-amber-700 flex-shrink-0" />
-                <span>You are currently offline</span>
-              </div>
-              <p className="text-[11px] leading-relaxed text-amber-800">
-                Signing in for the first time requires an internet connection. Once signed in, Nirantar stays fully accessible offline.
-              </p>
             </div>
           )}
 
@@ -149,9 +156,25 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
             </div>
           )}
 
-          {/* Main Login Form */}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1.5">
+          {/* Registration Form */}
+          <form onSubmit={handleSignup} className="space-y-3.5">
+            {/* Full Name */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[#102A43] block">
+                Full Name
+              </label>
+              <input
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g. Rahul Sharma"
+                className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl px-3.5 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1">
               <label className="text-xs font-bold text-[#102A43] block">
                 Email Address
               </label>
@@ -160,91 +183,90 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="you@example.com"
                 className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl px-3.5 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#102A43]">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => alert('Please contact your administrator or use Supabase password reset if enabled.')}
-                  className="text-[11px] text-[#675E54] hover:text-[#102A43] cursor-pointer"
-                >
-                  Forgot Password?
-                </button>
-              </div>
-
+            {/* Password */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[#102A43] block">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="At least 6 characters"
                   className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#675E54] hover:text-[#102A43] cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#675E54] hover:text-[#102A43]"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Remember Me Checkbox */}
-            <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer text-[#675E54]">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#D8CABA] text-[#102A43] focus:ring-0 cursor-pointer accent-[#102A43]"
-                />
-                <span>Remember me</span>
+            {/* Confirm Password */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[#102A43] block">
+                Confirm Password
               </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your password"
+                  className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#675E54] hover:text-[#102A43]"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 bg-[#102A43] hover:bg-[#0C1F33] disabled:opacity-50 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+              className="w-full py-3 bg-[#102A43] hover:bg-[#0C1F33] disabled:opacity-50 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer mt-3"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Signing In...</span>
+                  <span>Creating Account...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>Create Account</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
             </button>
           </form>
 
-          {/* New User / Create Account Section */}
+          {/* Switch to Login */}
           <div className="pt-3 border-t border-[#D8CABA] text-center space-y-2 text-xs">
             <span className="text-[#675E54] block">
-              Don't have an account?
+              Already have an account?
             </span>
             <button
               type="button"
-              onClick={onSwitchToSignup}
+              onClick={onSwitchToLogin}
               className="w-full py-2.5 bg-[#E9DDCB] hover:bg-[#E2D4BF] text-[#102A43] font-bold text-xs rounded-xl border border-[#D8CABA] transition-colors cursor-pointer"
             >
-              Create Account
+              Sign In
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Download,
   CheckCircle2,
@@ -8,7 +8,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-
+import { supabase } from '../supabase';
 export const LearnCatalog: React.FC = () => {
   const {
     learningPacks,
@@ -22,6 +22,21 @@ export const LearnCatalog: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'School' | 'Undergraduate'>('School');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
+
+  const [liveModules, setLiveModules] = useState<any[]>([]);
+
+
+  useEffect(() => {
+    async function fetchModules() {
+      const { data, error } = await supabase.from('moduless').select('*');
+      if (!error) {
+        setLiveModules(data || []);
+      } else {
+        console.error("Database error:", error);
+      }
+    }
+    fetchModules();
+  }, []);
 
   const isOffline = connectivityMode === 'offline';
 
@@ -53,11 +68,10 @@ export const LearnCatalog: React.FC = () => {
             setActiveTab('School');
             setSelectedSubject('all');
           }}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
-            activeTab === 'School'
-              ? 'border-[#102A43] text-[#102A43]'
-              : 'border-transparent text-[#675E54] hover:text-[#102A43]'
-          }`}
+          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'School'
+            ? 'border-[#102A43] text-[#102A43]'
+            : 'border-transparent text-[#675E54] hover:text-[#102A43]'
+            }`}
         >
           {t.learn.schoolTab}
         </button>
@@ -67,11 +81,10 @@ export const LearnCatalog: React.FC = () => {
             setActiveTab('Undergraduate');
             setSelectedSubject('all');
           }}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
-            activeTab === 'Undergraduate'
-              ? 'border-[#102A43] text-[#102A43]'
-              : 'border-transparent text-[#675E54] hover:text-[#102A43]'
-          }`}
+          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'Undergraduate'
+            ? 'border-[#102A43] text-[#102A43]'
+            : 'border-transparent text-[#675E54] hover:text-[#102A43]'
+            }`}
         >
           {t.learn.undergradTab}
         </button>
@@ -89,11 +102,10 @@ export const LearnCatalog: React.FC = () => {
           <button
             key={sub.id}
             onClick={() => setSelectedSubject(sub.id)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors whitespace-nowrap ${
-              selectedSubject === sub.id
-                ? 'bg-[#102A43] text-white font-semibold shadow-2xs'
-                : 'bg-[#E9DDCB] border border-[#D8CABA] text-[#675E54] hover:bg-[#E2D4BF]'
-            }`}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors whitespace-nowrap ${selectedSubject === sub.id
+              ? 'bg-[#102A43] text-white font-semibold shadow-2xs'
+              : 'bg-[#E9DDCB] border border-[#D8CABA] text-[#675E54] hover:bg-[#E2D4BF]'
+              }`}
           >
             {sub.label}
           </button>

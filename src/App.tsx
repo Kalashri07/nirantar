@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from './context/AppContext';
-import { LoginPage } from './components/LoginPage';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -50,5 +51,11 @@ export const MainLayout: React.FC = () => {
 };
 
 export default function App() {
-  return <MainLayout />;
+  return (
+    <AuthProvider>
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    </AuthProvider>
+  );
 }
