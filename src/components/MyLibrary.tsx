@@ -56,15 +56,15 @@ export const MyLibrary: React.FC = () => {
   const getSubjectColors = (worldId: string) => {
     switch (worldId) {
       case 'science':
-        return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };
+        return { bg: 'bg-[#EDF1FC]', text: 'text-[#3457D5]', border: 'border-[#C3D2F7]' };
       case 'math':
-        return { bg: 'bg-amber-50', text: 'text-amber-800', border: 'border-amber-200' };
+        return { bg: 'bg-[#FAF5ED]', text: 'text-[#977636]', border: 'border-[#E8DCBE]' };
       case 'language':
-        return { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' };
+        return { bg: 'bg-[#EEF7F6]', text: 'text-[#2B7A78]', border: 'border-[#CDEAE8]' };
       case 'tech':
-        return { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' };
+        return { bg: 'bg-[#EEF2FC]', text: 'text-[#3457D5]', border: 'border-[#CAD6FA]' };
       default:
-        return { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' };
+        return { bg: 'bg-[#F8F7F4]', text: 'text-[#4A5160]', border: 'border-[#EBE8E1]' };
     }
   };
 
@@ -72,27 +72,27 @@ export const MyLibrary: React.FC = () => {
     <div className="space-y-8 max-w-5xl mx-auto py-2">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#20242B]">
           {t.library.title}
         </h1>
-        <p className="text-sm text-slate-500 mt-1">{t.library.subtitle}</p>
+        <p className="text-sm text-[#7E8796] mt-1">{t.library.subtitle}</p>
       </div>
 
       {/* Storage Gauge */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-3">
+      <div className="bg-white border border-[#EBE8E1] rounded-2xl p-5 shadow-2xs space-y-3">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-slate-500" />
-            <span className="font-semibold text-slate-800">{t.library.storageUsed}</span>
+            <HardDrive className="w-4 h-4 text-[#7E8796]" />
+            <span className="font-semibold text-[#20242B]">{t.library.storageUsed}</span>
           </div>
-          <span className="text-slate-500">
-            <strong>{totalUsedMb.toFixed(1)} MB</strong> used of {maxStorageMb} MB ({storagePercentage}%)
+          <span className="text-[#7E8796]">
+            <strong className="text-[#20242B]">{totalUsedMb.toFixed(1)} MB</strong> used of {maxStorageMb} MB ({storagePercentage}%)
           </span>
         </div>
 
-        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+        <div className="w-full bg-[#F8F7F4] h-2 rounded-full overflow-hidden">
           <div
-            className="bg-indigo-600 h-full rounded-full transition-all duration-300"
+            className="bg-[#3457D5] h-full rounded-full transition-all duration-300"
             style={{ width: `${Math.max(4, storagePercentage)}%` }}
           />
         </div>
@@ -100,27 +100,27 @@ export const MyLibrary: React.FC = () => {
 
       {/* SECTION 1: DOWNLOADED MODULES */}
       <div className="space-y-3">
-        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <h2 className="text-base font-bold text-[#20242B] flex items-center gap-2">
           <span>{t.library.downloadedList}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F8F7F4] text-[#4A5160] border border-[#EBE8E1]">
             {downloadedModules.length}
           </span>
         </h2>
 
         {downloadedModules.length === 0 ? (
-          <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-8 text-center text-xs text-slate-500 max-w-md mx-auto">
-            <FolderDown className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <div className="bg-white border border-dashed border-[#EBE8E1] rounded-2xl p-8 text-center text-xs text-[#7E8796] max-w-md mx-auto">
+            <FolderDown className="w-8 h-8 text-[#7E8796] mx-auto mb-2" />
             <p>{t.library.noDownloads}</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs">
+          <div className="divide-y divide-[#EBE8E1] bg-white border border-[#EBE8E1] rounded-2xl overflow-hidden shadow-2xs">
             {downloadedModules.map((module) => {
               const Icon = getSubjectIcon(module.icon);
               const colors = getSubjectColors(module.worldId);
               return (
                 <div
                   key={module.id}
-                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8F7F4]/60 transition-colors"
                 >
                   <div className="flex items-start sm:items-center gap-3.5 flex-1">
                     <div className={`w-10 h-10 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center ${colors.text} flex-shrink-0`}>
@@ -129,17 +129,17 @@ export const MyLibrary: React.FC = () => {
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <span className="text-[11px] font-bold text-[#7E8796] uppercase tracking-wider">
                           {module.subjectName?.[language] || module.worldId}
                         </span>
-                        <span className="text-[10px] text-indigo-700 font-semibold flex items-center gap-1">
+                        <span className="text-[10px] text-[#3457D5] font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> {t.library.readyOffline}
                         </span>
                       </div>
-                      <h3 className="text-sm font-bold text-slate-900">
+                      <h3 className="text-sm font-bold text-[#20242B]">
                         {module.title[language]}
                       </h3>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[#7E8796]">
                         {module.progressPercentage}% complete · {module.estimatedSizeMb} MB
                       </p>
                     </div>
@@ -148,14 +148,14 @@ export const MyLibrary: React.FC = () => {
                   <div className="flex items-center justify-end gap-2 pt-2 sm:pt-0">
                     <button
                       onClick={() => removeDownloadedPack(module.id)}
-                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors text-xs font-medium"
+                      className="p-2 text-[#7E8796] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors text-xs font-medium"
                       title="Remove from device"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setActiveLessonPackId(module.id)}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold rounded-xl shadow-2xs transition-all flex items-center gap-1.5"
+                      className="px-4 py-2 bg-[#3457D5] hover:bg-[#2845B2] active:scale-95 text-white text-xs font-semibold rounded-xl shadow-2xs transition-all flex items-center gap-1.5"
                     >
                       <Play className="w-3.5 h-3.5 fill-white" />
                       <span>Start Lesson</span>
@@ -170,9 +170,9 @@ export const MyLibrary: React.FC = () => {
 
       {/* SECTION 2: AVAILABLE FOR DOWNLOAD */}
       <div className="space-y-3 pt-2">
-        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <h2 className="text-base font-bold text-[#20242B] flex items-center gap-2">
           <span>{t.library.availableList}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F8F7F4] text-[#4A5160] border border-[#EBE8E1]">
             {availableModules.length}
           </span>
         </h2>
@@ -184,42 +184,42 @@ export const MyLibrary: React.FC = () => {
             return (
               <div
                 key={module.id}
-                className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex flex-col justify-between"
+                className="bg-white border border-[#EBE8E1] rounded-2xl p-4 shadow-2xs flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className={`w-8 h-8 rounded-lg ${colors.bg} border ${colors.border} flex items-center justify-center ${colors.text}`}>
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className="text-xs font-mono text-slate-500">
+                    <span className="text-xs font-mono text-[#7E8796]">
                       {module.estimatedSizeMb} MB
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#7E8796] uppercase tracking-wider block">
                       {module.subjectName?.[language] || module.worldId}
                     </span>
-                    <h3 className="text-xs font-bold text-slate-900 line-clamp-1">
+                    <h3 className="text-xs font-bold text-[#20242B] line-clamp-1">
                       {module.title[language]}
                     </h3>
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3 border-t border-slate-100">
+                <div className="pt-3 mt-3 border-t border-[#EBE8E1]">
                   <button
                     onClick={() => downloadPack(module.id)}
                     disabled={isOffline || module.downloadProgress !== undefined}
-                    className="w-full py-2 bg-slate-50 hover:bg-slate-100 disabled:opacity-40 text-slate-700 text-xs font-medium rounded-lg border border-slate-200 transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-[#F8F7F4] hover:bg-[#EFECE5] disabled:opacity-40 text-[#4A5160] text-xs font-medium rounded-lg border border-[#EBE8E1] transition-colors flex items-center justify-center gap-1.5"
                   >
                     {module.downloadProgress !== undefined ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-600" />
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#3457D5]" />
                         <span>{t.library.downloading} ({module.downloadProgress}%)</span>
                       </>
                     ) : (
                       <>
-                        <Download className="w-3.5 h-3.5 text-indigo-600" />
+                        <Download className="w-3.5 h-3.5 text-[#3457D5]" />
                         <span>{t.library.downloadAction}</span>
                       </>
                     )}

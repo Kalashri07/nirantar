@@ -37,7 +37,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
             <span>
               <strong>{t.connectivity.offlineBanner}</strong>
               {pendingSyncQueue.length > 0 && (
-                <span className="ml-1 text-slate-600">
+                <span className="ml-1 text-[#7E8796]">
                   ({pendingSyncQueue.length} {t.connectivity.pendingSyncText})
                 </span>
               )}
@@ -53,41 +53,41 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
       )}
 
       {isSyncing && (
-        <div className="bg-indigo-600 text-white px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2">
+        <div className="bg-[#3457D5] text-white px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2">
           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
           <span>{t.connectivity.syncingBanner}</span>
         </div>
       )}
 
       {syncSuccessMessage && !isSyncing && (
-        <div className="bg-indigo-50 border-b border-indigo-200 px-4 py-1.5 text-xs text-indigo-900 font-medium flex items-center justify-center gap-2">
-          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="bg-[#EDF1FC] border-b border-[#C3D2F7] px-4 py-1.5 text-xs text-[#2845B2] font-medium flex items-center justify-center gap-2">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#3457D5]" />
           <span>{t.connectivity.syncedBanner}</span>
         </div>
       )}
 
       {/* Main Top Header */}
-      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 sticky top-0 z-20">
+      <header className="bg-white border-b border-[#EBE8E1] px-4 sm:px-8 py-3 flex items-center justify-between gap-4 sticky top-0 z-20">
         {/* Search Learning Content */}
         <div className="relative w-full max-w-xs sm:max-w-sm">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#7E8796] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search courses, lessons, topics..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 transition-colors"
+            className="w-full bg-[#F8F7F4] border border-[#EBE8E1] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#20242B] placeholder-[#7E8796] focus:outline-none focus:bg-white focus:border-[#3457D5] transition-colors"
           />
         </div>
 
         {/* Right Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Language Selector */}
-          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-0.5">
+          <div className="flex items-center bg-[#F8F7F4] border border-[#EBE8E1] rounded-lg p-0.5">
             <button
               onClick={() => setLanguage('en')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'en'
-                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-[#3457D5] shadow-2xs font-bold'
+                  : 'text-[#7E8796] hover:text-[#20242B]'
               }`}
             >
               EN
@@ -96,8 +96,8 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               onClick={() => setLanguage('mr')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'mr'
-                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-[#3457D5] shadow-2xs font-bold'
+                  : 'text-[#7E8796] hover:text-[#20242B]'
               }`}
             >
               मराठी
@@ -106,8 +106,8 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               onClick={() => setLanguage('hi')}
               className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
                 language === 'hi'
-                  ? 'bg-white text-indigo-700 shadow-2xs font-bold'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-[#3457D5] shadow-2xs font-bold'
+                  : 'text-[#7E8796] hover:text-[#20242B]'
               }`}
             >
               हिंदी
@@ -127,7 +127,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
               }`}
             >
               {connectivityMode === 'online' && <Wifi className="w-3.5 h-3.5 text-emerald-600" />}
-              {connectivityMode === 'low_data' && <Zap className="w-3.5 h-3.5 text-amber-600" />}
+              {connectivityMode === 'low_data' && <Zap className="w-3.5 h-3.5 text-[#C9A96E]" />}
               {connectivityMode === 'offline' && <WifiOff className="w-3.5 h-3.5 text-rose-600" />}
               <span className="hidden sm:inline capitalize">
                 {connectivityMode === 'online' && t.connectivity.online}
@@ -137,13 +137,13 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
             </button>
 
             {modeDropdownOpen && (
-              <div className="absolute right-0 mt-1.5 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-1.5 z-50 text-xs">
+              <div className="absolute right-0 mt-1.5 w-44 bg-white border border-[#EBE8E1] rounded-xl shadow-lg p-1.5 z-50 text-xs">
                 <button
                   onClick={() => {
                     setConnectivityMode('online');
                     setModeDropdownOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-700 text-left"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#F8F7F4] text-[#20242B] text-left"
                 >
                   <Wifi className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Online (Cloud Sync)</span>
@@ -153,9 +153,9 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
                     setConnectivityMode('low_data');
                     setModeDropdownOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-700 text-left"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#F8F7F4] text-[#20242B] text-left"
                 >
-                  <Zap className="w-3.5 h-3.5 text-amber-600" />
+                  <Zap className="w-3.5 h-3.5 text-[#C9A96E]" />
                   <span>Low Data Mode</span>
                 </button>
                 <button
@@ -163,7 +163,7 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
                     setConnectivityMode('offline');
                     setModeDropdownOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-700 text-left"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#F8F7F4] text-[#20242B] text-left"
                 >
                   <WifiOff className="w-3.5 h-3.5 text-rose-600" />
                   <span>Simulate Offline</span>
@@ -175,16 +175,16 @@ export const TopBar: React.FC<{ onSearch?: (query: string) => void }> = () => {
           {/* User Profile Avatar */}
           <button
             onClick={() => setCurrentNav('profile')}
-            className="flex items-center gap-2 pl-1 sm:pl-2 text-slate-700 hover:text-slate-900"
+            className="flex items-center gap-2 pl-1 sm:pl-2 text-[#20242B] hover:text-[#3457D5]"
           >
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center border border-indigo-200">
+            <div className="w-8 h-8 rounded-lg bg-[#EDF1FC] text-[#3457D5] font-bold text-xs flex items-center justify-center border border-[#C3D2F7]">
               {userProfile.name.charAt(0)}
             </div>
             <div className="hidden lg:block text-left text-xs">
-              <span className="font-semibold block text-slate-800 leading-tight">
+              <span className="font-semibold block text-[#20242B] leading-tight">
                 {userProfile.name}
               </span>
-              <span className="text-[10px] text-slate-400 block leading-tight">
+              <span className="text-[10px] text-[#7E8796] block leading-tight">
                 {userProfile.gradeOrStream}
               </span>
             </div>

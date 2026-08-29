@@ -2,15 +2,23 @@
 
 @layer base {
   :root {
-    --color-primary: #4f46e5;
-    --color-primary-light: #eef2ff;
-    --color-accent: #8b5cf6;
-    --color-bg-light: #f8fafc;
+    --color-graphite: #20242b;
+    --color-royal-blue: #3457d5;
+    --color-royal-blue-hover: #2845b2;
+    --color-royal-blue-tint: #edf1fc;
+    --color-champagne: #c9a96e;
+    --color-champagne-tint: #faf5ed;
+    --color-champagne-border: #e8dcbe;
+    --color-porcelain: #f8f7f4;
+    --color-border-warm: #ebe8e1;
+    --color-border-subtle: #e2ded5;
+    --color-text-body: #4a5160;
+    --color-text-muted: #7e8796;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #1e293b;
+    background-color: #f8f7f4;
+    color: #20242b;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -22,22 +30,22 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: rgba(241, 245, 249, 0.8);
+    background: #f8f7f4;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(203, 213, 225, 0.9);
+    background: #d8d4cb;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 1);
+    background: #bbb5a7;
   }
 }
 
-/* Light clean cards */
+/* Light clean cards with warm porcelain contrast */
 .app-card {
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid #ebe8e1;
+  box-shadow: 0 1px 3px 0 rgba(32, 36, 43, 0.04), 0 1px 2px -1px rgba(32, 36, 43, 0.02);
 }
 
 .app-card-hover {
@@ -46,14 +54,14 @@
 
 .app-card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-  border-color: #cbd5e1;
+  box-shadow: 0 10px 20px -3px rgba(32, 36, 43, 0.06), 0 4px 6px -4px rgba(32, 36, 43, 0.03);
+  border-color: #d8d4cb;
 }
 
 /* Low Data Mode Overrides */
 .low-data-mode .app-card {
   box-shadow: none !important;
-  border-color: #e2e8f0 !important;
+  border-color: #ebe8e1 !important;
 }
 
 .low-data-mode .rich-animation {
@@ -61,9 +69,9 @@
   transition: none !important;
 }
 
-/* Shimmer gradient effect for progress bar */
+/* Shimmer gradient effect for Royal Blue progress bar */
 .xp-shimmer {
-  background: linear-gradient(90deg, #4f46e5 0%, #818cf8 50%, #4f46e5 100%);
+  background: linear-gradient(90deg, #3457d5 0%, #5d7ce8 50%, #3457d5 100%);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
