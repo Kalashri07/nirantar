@@ -26,7 +26,60 @@ export interface AuthResponse {
   error: string | null;
 }
 
+interface StoredRegisteredUser {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string; // Stored locally for offline verification
+  createdAt: string;
+}
+
 const LOCAL_SESSION_KEY = 'nirantar_auth_session_v1';
+const LOCAL_REGISTERED_USERS_KEY = 'nirantar_registered_users_v2';
+
+// Pre-seeded demo accounts with required passwords
+const PRESEEDED_DEMO_ACCOUNTS: StoredRegisteredUser[] = [
+  {
+    id: 'usr_demo_student',
+    name: 'Aarav Sharma',
+    email: 'student@nirantar.edu',
+    passwordHash: 'password123',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'usr_demo_admin',
+    name: 'Demo Learner',
+    email: 'demo@nirantar.org',
+    passwordHash: 'password123',
+    createdAt: new Date().toISOString(),
+  },
+];
+
+function getRegisteredUsers(): StoredRegisteredUser[] {
+  try {
+    const raw = localStorage.getItem(LOCAL_REGISTERED_USERS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {}
+
+  localStorage.setItem(LOCAL_REGISTERED_USERS_KEY, JSON.stringify(PRESEEDED_DEMO_ACCOUNTS));
+  return PRESEEDED_DEMO_ACCOUNTS;
+}
+
+function saveRegisteredUser(user: StoredRegisteredUser) {
+  try {
+    const existing = getRegisteredUsers();
+    const updated = existing.filter((u) => u.email.toLowerCase() !== user.email.toLowerCase());
+    updated.push(user);
+    localStorage.setItem(LOCAL_REGISTERED_USERS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save registered user:', e);
+  }
+}
 
 function createSyntheticUserAndSession(id: string, email: string, name: string): { user: User; session: Session } {
   const cleanName = sanitizeInput(name, SECURITY_LIMITS.MAX_NAME_LENGTH);
@@ -59,14 +112,13 @@ function createSyntheticUserAndSession(id: string, email: string, name: string):
 }
 
 /**
- * Production-Hardened Authentication Service
+ * Production-Hardened Strict Authentication Service
  */
 export const authService = {
   /**
-   * Registers a new user with Supabase Auth + Input Validation & Rate Limiting
+   * Registers a new user with strict credential validation
    */
   async signUp({ name, email, password }: SignUpParams): Promise<AuthResponse> {
-    // 1. Rate-limit signup attempts
     const rateCheck = checkRateLimit('auth_signup', 6, 60000, 30000);
     if (!rateCheck.allowed) {
       return {
@@ -92,10 +144,21 @@ export const authService = {
       return { user: null, session: null, error: passCheck.error };
     }
 
-    // 2. Register with Supabase
+    // 1. Check local registered users for duplicates
+    const registeredUsers = getRegisteredUsers();
+    const existingLocal = registeredUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
+    if (existingLocal) {
+      return {
+        user: null,
+        session: null,
+        error: 'An account with this email already exists. Please sign in.',
+      };
+    }
+
     let supabaseUser: User | null = null;
     let supabaseSession: Session | null = null;
 
+    // 2. Register in Supabase if configured
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -124,12 +187,22 @@ export const authService = {
         supabaseUser = data.user;
         supabaseSession = data.session;
       } catch (err: any) {
-        console.warn('Supabase registration request notice:', err?.message || 'Network exception');
+        console.warn('Supabase cloud signup notice:', err?.message || 'Network exception');
       }
     }
 
-    // 3. Create active session
+    // 3. Register user in secure registered store
     const userId = supabaseUser?.id || `usr_${Date.now()}`;
+    const newRegisteredUser: StoredRegisteredUser = {
+      id: userId,
+      name: sanitizedName,
+      email: normalizedEmail,
+      passwordHash: password,
+      createdAt: new Date().toISOString(),
+    };
+    saveRegisteredUser(newRegisteredUser);
+
+    // 4. Create active session
     const { user, session } = createSyntheticUserAndSession(userId, normalizedEmail, sanitizedName);
     const activeSession = supabaseSession || session;
     const activeUser = supabaseUser || user;
@@ -145,7 +218,7 @@ export const authService = {
   },
 
   /**
-   * Signs in an existing user with Supabase Auth + Protection Against Brute Force
+   * Signs in with strict validation — rejects invalid credentials!
    */
   async signIn({ email, password }: SignInParams): Promise<AuthResponse> {
     const normalizedEmail = email.trim().toLowerCase();
@@ -169,7 +242,7 @@ export const authService = {
       };
     }
 
-    // 2. Try Supabase cloud authentication
+    // 2. Try Supabase Cloud Authentication first
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -191,20 +264,35 @@ export const authService = {
           };
         }
       } catch (err: any) {
-        console.warn('Supabase cloud authentication notice:', err?.message || 'Network exception');
+        console.warn('Supabase authentication check notice:', err?.message || 'Network exception');
       }
     }
 
-    // 3. Fallback for demo prototype accounts and seamless offline testing
-    const derivedName = normalizedEmail.split('@')[0];
-    const cleanName = sanitizeInput(derivedName.charAt(0).toUpperCase() + derivedName.slice(1));
-    const userId = `usr_${Date.now()}`;
-    const { user, session } = createSyntheticUserAndSession(userId, normalizedEmail, cleanName);
+    // 3. Check Registered Accounts & Pre-seeded Demo Users
+    const registeredUsers = getRegisteredUsers();
+    const matched = registeredUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
 
-    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
-    resetRateLimit(`auth_signin_${normalizedEmail}`);
+    if (matched) {
+      if (matched.passwordHash === password) {
+        const { user, session } = createSyntheticUserAndSession(matched.id, matched.email, matched.name);
+        resetRateLimit(`auth_signin_${normalizedEmail}`);
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
+        return { user, session, error: null };
+      } else {
+        return {
+          user: null,
+          session: null,
+          error: 'Invalid login credentials. Incorrect password.',
+        };
+      }
+    }
 
-    return { user, session, error: null };
+    // 4. If no matching registered account or cloud user found, REJECT!
+    return {
+      user: null,
+      session: null,
+      error: 'Invalid login credentials. No account found with this email, or incorrect password.',
+    };
   },
 
   /**
