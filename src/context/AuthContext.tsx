@@ -3,6 +3,8 @@ import type { User, Session } from '@supabase/supabase-js';
 import { authService, SignUpParams, SignInParams, AuthResponse } from '../services/authService';
 import { isSupabaseConfigured } from '../lib/supabase';
 
+const LOCAL_SESSION_KEY = 'nirantar_auth_session_v1';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -15,40 +17,70 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function getInitialStoredSession(): { session: Session | null; user: User | null } {
+  try {
+    const raw = localStorage.getItem(LOCAL_SESSION_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.user) {
+        return { session: parsed as Session, user: parsed.user as User };
+      }
+    }
+  } catch (e) {
+    console.error('Error reading stored session:', e);
+  }
+  return { session: null, user: null };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Synchronous instant initialization from localStorage to prevent any logout on page refresh
+  const initialData = getInitialStoredSession();
+  const [session, setSession] = useState<Session | null>(initialData.session);
+  const [user, setUser] = useState<User | null>(initialData.user);
+  const [loading, setLoading] = useState<boolean>(!initialData.session);
 
   useEffect(() => {
     let isMounted = true;
 
-    // 1. Initial Session Check on App Startup
-    async function initializeAuth() {
+    // 1. Re-verify or hydrate session asynchronously on startup
+    async function hydrateSession() {
       try {
-        const initialSession = await authService.getSession();
+        const currentSession = await authService.getSession();
         if (isMounted) {
-          setSession(initialSession);
-          setUser(initialSession?.user || null);
+          if (currentSession) {
+            setSession(currentSession);
+            setUser(currentSession.user || null);
+            localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(currentSession));
+          }
           setLoading(false);
         }
       } catch (err) {
-        console.error('Failed to initialize Supabase session:', err);
+        console.warn('Session hydration notice:', err);
         if (isMounted) {
           setLoading(false);
         }
       }
     }
 
-    initializeAuth();
+    hydrateSession();
 
-    // 2. Listen to real-time auth state changes
-    const subscription = authService.onAuthStateChange((_event, newSession) => {
-      if (isMounted) {
+    // 2. Real-time auth changes listener
+    const subscription = authService.onAuthStateChange((event, newSession) => {
+      if (!isMounted) return;
+
+      if (event === 'SIGNED_IN' || (event === 'TOKEN_REFRESHED' && newSession)) {
         setSession(newSession);
         setUser(newSession?.user || null);
-        setLoading(false);
+        if (newSession) {
+          localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(newSession));
+        }
+      } else if (event === 'USER_UPDATED' && newSession) {
+        setSession(newSession);
+        setUser(newSession.user || null);
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(newSession));
       }
+      // Note: We deliberately do NOT wipe local session on INITIAL_SESSION or network drop
+      setLoading(false);
     });
 
     return () => {
@@ -59,23 +91,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (params: SignUpParams): Promise<AuthResponse> => {
     const res = await authService.signUp(params);
-    if (res.session) {
+    if (res.session && res.user) {
       setSession(res.session);
       setUser(res.user);
+      localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(res.session));
     }
     return res;
   };
 
   const signIn = async (params: SignInParams): Promise<AuthResponse> => {
     const res = await authService.signIn(params);
-    if (res.session) {
+    if (res.session && res.user) {
       setSession(res.session);
       setUser(res.user);
+      localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(res.session));
     }
     return res;
   };
 
   const signOut = async (): Promise<void> => {
+    localStorage.removeItem(LOCAL_SESSION_KEY);
     await authService.signOut();
     setUser(null);
     setSession(null);
