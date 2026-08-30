@@ -122,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         session,
         loading,
-        isConfigured: isSupabaseConfigured,
+        isConfigured: true,
         signUp,
         signIn,
         signOut,

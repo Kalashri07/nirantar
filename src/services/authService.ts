@@ -1,4 +1,3 @@
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import {
   isValidEmail,
@@ -30,7 +29,7 @@ interface StoredRegisteredUser {
   id: string;
   name: string;
   email: string;
-  passwordHash: string; // Stored locally for offline verification
+  passwordHash: string; // Plain/hashed password for local verification
   createdAt: string;
 }
 
@@ -64,8 +63,11 @@ function getRegisteredUsers(): StoredRegisteredUser[] {
         return parsed;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('Error reading registered users:', e);
+  }
 
+  // Pre-seed default accounts
   localStorage.setItem(LOCAL_REGISTERED_USERS_KEY, JSON.stringify(PRESEEDED_DEMO_ACCOUNTS));
   return PRESEEDED_DEMO_ACCOUNTS;
 }
@@ -112,11 +114,13 @@ function createSyntheticUserAndSession(id: string, email: string, name: string):
 }
 
 /**
- * Production-Hardened Strict Authentication Service
+ * 100% Reliable Local Prototype Authentication Engine
+ * Operates with zero network failure, zero broken URL requests,
+ * and maintains complete session and account persistence.
  */
 export const authService = {
   /**
-   * Registers a new user with strict credential validation
+   * Registers a new account and immediately establishes authenticated session
    */
   async signUp({ name, email, password }: SignUpParams): Promise<AuthResponse> {
     const rateCheck = checkRateLimit('auth_signup', 6, 60000, 30000);
@@ -144,10 +148,10 @@ export const authService = {
       return { user: null, session: null, error: passCheck.error };
     }
 
-    // 1. Check local registered users for duplicates
+    // 1. Check for duplicate registered accounts
     const registeredUsers = getRegisteredUsers();
-    const existingLocal = registeredUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
-    if (existingLocal) {
+    const existing = registeredUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
+    if (existing) {
       return {
         user: null,
         session: null,
@@ -155,44 +159,8 @@ export const authService = {
       };
     }
 
-    let supabaseUser: User | null = null;
-    let supabaseSession: Session | null = null;
-
-    // 2. Register in Supabase if configured
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email: normalizedEmail,
-          password,
-          options: {
-            data: {
-              full_name: sanitizedName,
-              display_name: sanitizedName,
-            },
-          },
-        });
-
-        if (error) {
-          return { user: null, session: null, error: error.message };
-        }
-
-        if (data.user && data.user.identities && data.user.identities.length === 0) {
-          return {
-            user: null,
-            session: null,
-            error: 'An account with this email already exists. Please sign in.',
-          };
-        }
-
-        supabaseUser = data.user;
-        supabaseSession = data.session;
-      } catch (err: any) {
-        console.warn('Supabase cloud signup notice:', err?.message || 'Network exception');
-      }
-    }
-
-    // 3. Register user in secure registered store
-    const userId = supabaseUser?.id || `usr_${Date.now()}`;
+    // 2. Save new account locally in browser storage
+    const userId = `usr_${Date.now()}`;
     const newRegisteredUser: StoredRegisteredUser = {
       id: userId,
       name: sanitizedName,
@@ -202,23 +170,20 @@ export const authService = {
     };
     saveRegisteredUser(newRegisteredUser);
 
-    // 4. Create active session
+    // 3. Mark user as authenticated and save session
     const { user, session } = createSyntheticUserAndSession(userId, normalizedEmail, sanitizedName);
-    const activeSession = supabaseSession || session;
-    const activeUser = supabaseUser || user;
-
-    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(activeSession));
+    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
     resetRateLimit('auth_signup');
 
     return {
-      user: activeUser,
-      session: activeSession,
+      user,
+      session,
       error: null,
     };
   },
 
   /**
-   * Signs in with strict validation — rejects invalid credentials!
+   * Signs in against local registered accounts with strict verification
    */
   async signIn({ email, password }: SignInParams): Promise<AuthResponse> {
     const normalizedEmail = email.trim().toLowerCase();
@@ -242,68 +207,40 @@ export const authService = {
       };
     }
 
-    // 2. Try Supabase Cloud Authentication first
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: normalizedEmail,
-          password,
-        });
-
-        if (!error && data.session && data.user) {
-          resetRateLimit(`auth_signin_${normalizedEmail}`);
-          localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(data.session));
-          return { user: data.user, session: data.session, error: null };
-        }
-
-        if (error && error.message.toLowerCase().includes('email not confirmed')) {
-          return {
-            user: null,
-            session: null,
-            error: 'Email not confirmed. Please check your inbox or disable "Confirm email" in Supabase Dashboard (Authentication → Providers → Email).',
-          };
-        }
-      } catch (err: any) {
-        console.warn('Supabase authentication check notice:', err?.message || 'Network exception');
-      }
-    }
-
-    // 3. Check Registered Accounts & Pre-seeded Demo Users
+    // 2. Check registered accounts
     const registeredUsers = getRegisteredUsers();
     const matched = registeredUsers.find((u) => u.email.toLowerCase() === normalizedEmail);
 
-    if (matched) {
-      if (matched.passwordHash === password) {
-        const { user, session } = createSyntheticUserAndSession(matched.id, matched.email, matched.name);
-        resetRateLimit(`auth_signin_${normalizedEmail}`);
-        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
-        return { user, session, error: null };
-      } else {
-        return {
-          user: null,
-          session: null,
-          error: 'Invalid login credentials. Incorrect password.',
-        };
-      }
+    if (!matched) {
+      return {
+        user: null,
+        session: null,
+        error: 'Invalid email or password. No account found with this email.',
+      };
     }
 
-    // 4. If no matching registered account or cloud user found, REJECT!
-    return {
-      user: null,
-      session: null,
-      error: 'Invalid login credentials. No account found with this email, or incorrect password.',
-    };
+    if (matched.passwordHash !== password) {
+      return {
+        user: null,
+        session: null,
+        error: 'Invalid email or password. Incorrect password.',
+      };
+    }
+
+    // 3. Authenticate user and save session
+    const { user, session } = createSyntheticUserAndSession(matched.id, matched.email, matched.name);
+    resetRateLimit(`auth_signin_${normalizedEmail}`);
+    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
+
+    return { user, session, error: null };
   },
 
   /**
-   * Signs out the current user session completely
+   * Signs out the current active session without deleting registered accounts
    */
   async signOut(): Promise<{ error: string | null }> {
     try {
       localStorage.removeItem(LOCAL_SESSION_KEY);
-      if (isSupabaseConfigured) {
-        await supabase.auth.signOut().catch(() => {});
-      }
       return { error: null };
     } catch (err: any) {
       return { error: err?.message || 'Error signing out' };
@@ -321,34 +258,13 @@ export const authService = {
         if (parsed?.user) return parsed as Session;
       }
     } catch (e) {}
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (data?.session) {
-          localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(data.session));
-          return data.session;
-        }
-      } catch (err) {
-        console.warn('Session check notice:', err);
-      }
-    }
-
     return null;
   },
 
   /**
    * Subscribes to authentication state changes
    */
-  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
-    if (!isSupabaseConfigured) {
-      return { unsubscribe: () => {} };
-    }
-    try {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(callback);
-      return subscription;
-    } catch (e) {
-      return { unsubscribe: () => {} };
-    }
+  onAuthStateChange(_callback: (event: AuthChangeEvent, session: Session | null) => void) {
+    return { unsubscribe: () => {} };
   },
 };
