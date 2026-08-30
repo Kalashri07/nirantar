@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  XCircle,
   Award,
   BookOpen,
   WifiOff,
@@ -476,12 +477,19 @@ export const LessonWorkspace: React.FC = () => {
                         {currentModule.options.map((opt) => {
                           const isSelected = selectedOptionId === opt.id;
                           let style = 'bg-[#FAF6EF] border-[#D8CABA] text-[#102A43] hover:bg-[#EFE5D5]';
+                          let badgeText = '';
 
                           if (hasSubmitted) {
-                            if (isSelected && opt.isCorrect) {
-                              style = 'bg-[#DCEFE5] border-[#2D7A58] text-[#1E573E] font-semibold';
+                            if (opt.isCorrect) {
+                              // Always highlight the correct answer in green
+                              style = 'bg-[#DCEFE5] border-[#2D7A58] text-[#1E573E] font-semibold ring-1 ring-[#2D7A58]';
+                              badgeText = language === 'mr' ? 'योग्य उत्तर' : language === 'hi' ? 'सही उत्तर' : 'Correct Answer';
                             } else if (isSelected && !opt.isCorrect) {
-                              style = 'bg-[#F9E2E2] border-[#EBB6B6] text-[#782323] font-medium';
+                              // Highlight the user's incorrect choice in red
+                              style = 'bg-[#F9E2E2] border-[#E85D5D] text-[#782323] font-medium ring-1 ring-[#E85D5D]';
+                              badgeText = language === 'mr' ? 'चुकीची निवड' : language === 'hi' ? 'गलत चयन' : 'Your Choice (Incorrect)';
+                            } else {
+                              style = 'bg-[#FAF6EF]/60 border-[#D8CABA] text-[#8C8275] opacity-60';
                             }
                           } else if (isSelected) {
                             style = 'bg-[#E9DDCB] border-[#102A43] text-[#102A43] font-semibold ring-1 ring-[#102A43]';
@@ -494,9 +502,35 @@ export const LessonWorkspace: React.FC = () => {
                               onClick={() => handleSelectOption(opt.id)}
                               className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between cursor-pointer ${style}`}
                             >
-                              <span>{opt.text[language]}</span>
-                              {hasSubmitted && isSelected && opt.isCorrect && (
-                                <CheckCircle2 className="w-4 h-4 text-[#1E573E] flex-shrink-0" />
+                              <div className="flex items-center gap-2.5">
+                                {hasSubmitted ? (
+                                  opt.isCorrect ? (
+                                    <CheckCircle2 className="w-4 h-4 text-[#1E573E] flex-shrink-0" />
+                                  ) : isSelected ? (
+                                    <XCircle className="w-4 h-4 text-[#E85D5D] flex-shrink-0" />
+                                  ) : (
+                                    <div className="w-4 h-4 rounded-full border border-[#D8CABA] flex-shrink-0" />
+                                  )
+                                ) : (
+                                  <div
+                                    className={`w-4 h-4 rounded-full border flex-shrink-0 ${
+                                      isSelected ? 'border-[#102A43] bg-[#102A43]' : 'border-[#D8CABA]'
+                                    }`}
+                                  />
+                                )}
+                                <span>{opt.text[language]}</span>
+                              </div>
+
+                              {hasSubmitted && badgeText && (
+                                <span
+                                  className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ml-2 flex-shrink-0 ${
+                                    opt.isCorrect
+                                      ? 'bg-[#2D7A58] text-white'
+                                      : 'bg-[#E85D5D] text-white'
+                                  }`}
+                                >
+                                  {badgeText}
+                                </span>
                               )}
                             </button>
                           );
@@ -506,24 +540,55 @@ export const LessonWorkspace: React.FC = () => {
                       {/* Feedback banner (shown only after explicit submit) */}
                       {hasSubmitted && selectedOptionId && (
                         <div
-                          className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
+                          className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1.5 ${
                             isCurrentModuleDone
                               ? 'bg-[#DCEFE5] border-[#B6DEC9] text-[#1E573E]'
                               : 'bg-[#F9E2E2] border-[#EBB6B6] text-[#782323]'
                           }`}
                         >
-                          <span className="font-bold block mb-0.5">
-                            {isCurrentModuleDone
-                              ? t.lesson.correctNotification
-                              : t.lesson.tryAgainNotification}
-                          </span>
-                          <span>
-                            {
-                              currentModule.options.find((o) => o.id === selectedOptionId)?.explanation[
-                                language
-                              ]
-                            }
-                          </span>
+                          <div className="flex items-center gap-2 font-bold text-xs sm:text-sm">
+                            {isCurrentModuleDone ? (
+                              <>
+                                <CheckCircle2 className="w-4 h-4 text-[#1E573E] flex-shrink-0" />
+                                <span>{t.lesson.correctNotification}</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="w-4 h-4 text-[#782323] flex-shrink-0" />
+                                <span>
+                                  {language === 'mr'
+                                    ? 'चुकीचे उत्तर — योग्य उत्तर वर हिरव्या रंगात दाखवले आहे.'
+                                    : language === 'hi'
+                                    ? 'गलत उत्तर — सही उत्तर ऊपर हरे रंग में हाइलाइट किया गया है।'
+                                    : 'Incorrect Choice — The correct answer is highlighted in green above.'}
+                                </span>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="text-xs pt-1 border-t border-current/15 leading-normal">
+                            <span className="font-semibold block mb-0.5">
+                              {language === 'mr' ? 'स्पष्टीकरण:' : language === 'hi' ? 'व्याख्या:' : 'Explanation:'}
+                            </span>
+                            <span>
+                              {
+                                currentModule.options.find(
+                                  (o) => (isCurrentModuleDone ? o.id === selectedOptionId : o.isCorrect)
+                                )?.explanation[language] ||
+                                currentModule.options.find((o) => o.id === selectedOptionId)?.explanation[language]
+                              }
+                            </span>
+                          </div>
+
+                          {!isCurrentModuleDone && (
+                            <p className="text-[11px] font-medium text-[#782323]/80 pt-1 italic">
+                              {language === 'mr'
+                                ? '💡 पुन्हा प्रयत्न करण्यासाठी दुसरा पर्याय निवडा.'
+                                : language === 'hi'
+                                ? '💡 पुनः प्रयास करने के लिए ऊपर दूसरा विकल्प चुनें।'
+                                : '💡 You can select another option above and try again.'}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
