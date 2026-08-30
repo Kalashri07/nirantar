@@ -1,7 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { authService, SignUpParams, SignInParams, AuthResponse } from '../services/authService';
-import { isSupabaseConfigured } from '../lib/supabase';
+import {
+  authService,
+  SignUpParams,
+  SignInParams,
+  AuthResponse,
+  MFAEnrollResponse,
+} from '../services/authService';
 
 const LOCAL_SESSION_KEY = 'nirantar_auth_session_v1';
 
@@ -13,6 +18,11 @@ interface AuthContextType {
   signUp: (params: SignUpParams) => Promise<AuthResponse>;
   signIn: (params: SignInParams) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
+  enrollMFA: () => Promise<MFAEnrollResponse>;
+  verifyMFAEnrollment: (factorId: string, code: string) => Promise<{ success: boolean; error: string | null }>;
+  verifyMFALogin: (factorId: string, code: string) => Promise<AuthResponse>;
+  listMFAFactors: () => Promise<{ factors: any[]; isMFAEnabled: boolean; primaryFactorId?: string; error: string | null }>;
+  unenrollMFA: (factorId: string) => Promise<{ success: boolean; error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,7 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(newSession.user || null);
         localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(newSession));
       }
-      // Note: We deliberately do NOT wipe local session on INITIAL_SESSION or network drop
       setLoading(false);
     });
 
@@ -109,6 +118,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return res;
   };
 
+  const verifyMFALogin = async (factorId: string, code: string): Promise<AuthResponse> => {
+    const res = await authService.verifyMFALogin(factorId, code);
+    if (res.session && res.user) {
+      setSession(res.session);
+      setUser(res.user);
+      localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(res.session));
+    }
+    return res;
+  };
+
   const signOut = async (): Promise<void> => {
     localStorage.removeItem(LOCAL_SESSION_KEY);
     await authService.signOut();
@@ -126,6 +145,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signUp,
         signIn,
         signOut,
+        enrollMFA: authService.enrollMFA,
+        verifyMFAEnrollment: authService.verifyMFAEnrollment,
+        verifyMFALogin,
+        listMFAFactors: authService.listMFAFactors,
+        unenrollMFA: authService.unenrollMFA,
       }}
     >
       {children}

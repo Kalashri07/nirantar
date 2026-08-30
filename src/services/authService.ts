@@ -24,13 +24,23 @@ export interface AuthResponse {
   user: User | null;
   session: Session | null;
   error: string | null;
+  mfaRequired?: boolean;
+  factorId?: string;
+}
+
+export interface MFAEnrollResponse {
+  factorId: string | null;
+  qrCode: string | null;
+  secret: string | null;
+  uri: string | null;
+  error: string | null;
 }
 
 const LOCAL_SESSION_KEY = 'nirantar_auth_session_v1';
+const LOCAL_MFA_KEY = 'nirantar_local_mfa_factors_v1';
 
 /**
- * Official Supabase Authentication Service
- * Communicates directly with Supabase Auth API
+ * Official Supabase Authentication Service with Multi-Factor Authentication (MFA / TOTP)
  */
 export const authService = {
   /**
@@ -71,7 +81,6 @@ export const authService = {
     }
 
     try {
-      // Direct call to official Supabase Auth signup
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
@@ -87,7 +96,6 @@ export const authService = {
         return { user: null, session: null, error: error.message };
       }
 
-      // If user already exists, Supabase returns empty identities array
       if (data.user && data.user.identities && data.user.identities.length === 0) {
         return {
           user: null,
@@ -96,11 +104,9 @@ export const authService = {
         };
       }
 
-      // If session is returned immediately (when Confirm Email is disabled in Supabase)
       if (data.session) {
         localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(data.session));
       } else {
-        // If email confirmation is required, attempt login or return user confirmation status
         const loginAttempt = await supabase.auth.signInWithPassword({
           email: normalizedEmail,
           password,
@@ -131,7 +137,7 @@ export const authService = {
   },
 
   /**
-   * Signs in an existing user with Supabase Auth
+   * Signs in with password and checks if MFA verification is required
    */
   async signIn({ email, password }: SignInParams): Promise<AuthResponse> {
     const normalizedEmail = email.trim().toLowerCase();
@@ -163,7 +169,6 @@ export const authService = {
     }
 
     try {
-      // Direct call to official Supabase Auth signin
       const { data, error } = await supabase.auth.signInWithPassword({
         email: normalizedEmail,
         password,
@@ -180,7 +185,29 @@ export const authService = {
         return { user: null, session: null, error: error.message };
       }
 
-      if (data.session) {
+      if (data.user && data.session) {
+        // Check if MFA (TOTP) is enrolled for this user
+        try {
+          const { data: factorsData } = await supabase.auth.mfa.listFactors();
+          const verifiedFactors = factorsData?.totp?.filter((f) => f.status === 'verified') || [];
+
+          if (verifiedFactors.length > 0) {
+            const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+            if (aalData?.nextLevel === 'aal2' && aalData?.currentLevel !== 'aal2') {
+              return {
+                user: data.user,
+                session: null, // Gate session until 2FA code is entered
+                mfaRequired: true,
+                factorId: verifiedFactors[0].id,
+                error: null,
+              };
+            }
+          }
+        } catch (mfaErr) {
+          console.warn('MFA factor check note:', mfaErr);
+        }
+
+        // Standard login when MFA is not active
         localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(data.session));
       }
 
@@ -196,6 +223,186 @@ export const authService = {
         session: null,
         error: err?.message || 'An unexpected error occurred during sign in.',
       };
+    }
+  },
+
+  /**
+   * Enrolls a new TOTP Multi-Factor Authentication factor with Supabase
+   */
+  async enrollMFA(): Promise<MFAEnrollResponse> {
+    if (!isSupabaseConfigured) {
+      return {
+        factorId: null,
+        qrCode: null,
+        secret: null,
+        uri: null,
+        error: 'Supabase is not configured.',
+      };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        issuer: 'Nirantar',
+      });
+
+      if (error) {
+        return {
+          factorId: null,
+          qrCode: null,
+          secret: null,
+          uri: null,
+          error: error.message,
+        };
+      }
+
+      return {
+        factorId: data.id,
+        qrCode: data.totp.qr_code,
+        secret: data.totp.secret,
+        uri: data.totp.uri,
+        error: null,
+      };
+    } catch (err: any) {
+      return {
+        factorId: null,
+        qrCode: null,
+        secret: null,
+        uri: null,
+        error: err?.message || 'Failed to initialize MFA enrollment.',
+      };
+    }
+  },
+
+  /**
+   * Verifies and activates newly enrolled TOTP factor
+   */
+  async verifyMFAEnrollment(factorId: string, code: string): Promise<{ success: boolean; error: string | null }> {
+    const cleanCode = code.trim().replace(/\s+/g, '');
+    if (cleanCode.length !== 6 || !/^\d{6}$/.test(cleanCode)) {
+      return { success: false, error: 'Please enter a valid 6-digit verification code.' };
+    }
+
+    if (!isSupabaseConfigured) {
+      return { success: false, error: 'Supabase is not configured.' };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.mfa.challengeAndVerify({
+        factorId,
+        code: cleanCode,
+      });
+
+      if (error) {
+        return { success: false, error: error.message || 'Invalid verification code. Please check your authenticator app.' };
+      }
+
+      // Sync active session if upgraded
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session) {
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(sessionData.session));
+      }
+
+      return { success: true, error: null };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Failed to verify MFA code.',
+      };
+    }
+  },
+
+  /**
+   * Verifies MFA during login flow and unlocks session
+   */
+  async verifyMFALogin(factorId: string, code: string): Promise<AuthResponse> {
+    const cleanCode = code.trim().replace(/\s+/g, '');
+    if (cleanCode.length !== 6 || !/^\d{6}$/.test(cleanCode)) {
+      return { user: null, session: null, error: 'Please enter the 6-digit code from your authenticator app.' };
+    }
+
+    if (!isSupabaseConfigured) {
+      return { user: null, session: null, error: 'Supabase is not configured.' };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.mfa.challengeAndVerify({
+        factorId,
+        code: cleanCode,
+      });
+
+      if (error) {
+        return { user: null, session: null, error: 'Invalid authenticator code. Please check your app and try again.' };
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const activeSession = sessionData?.session || null;
+      const activeUser = activeSession?.user || null;
+
+      if (activeSession) {
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(activeSession));
+      }
+
+      return {
+        user: activeUser,
+        session: activeSession,
+        error: null,
+      };
+    } catch (err: any) {
+      return {
+        user: null,
+        session: null,
+        error: err?.message || 'An error occurred during MFA verification.',
+      };
+    }
+  },
+
+  /**
+   * Lists all MFA factors for current user
+   */
+  async listMFAFactors(): Promise<{ factors: any[]; isMFAEnabled: boolean; primaryFactorId?: string; error: string | null }> {
+    if (!isSupabaseConfigured) {
+      return { factors: [], isMFAEnabled: false, error: null };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (error) {
+        return { factors: [], isMFAEnabled: false, error: error.message };
+      }
+
+      const verified = data?.totp?.filter((f) => f.status === 'verified') || [];
+      return {
+        factors: data?.all || [],
+        isMFAEnabled: verified.length > 0,
+        primaryFactorId: verified[0]?.id,
+        error: null,
+      };
+    } catch (err: any) {
+      return {
+        factors: [],
+        isMFAEnabled: false,
+        error: err?.message || 'Failed to list MFA factors.',
+      };
+    }
+  },
+
+  /**
+   * Unenrolls/disables MFA factor
+   */
+  async unenrollMFA(factorId: string): Promise<{ success: boolean; error: string | null }> {
+    if (!isSupabaseConfigured) {
+      return { success: false, error: 'Supabase is not configured.' };
+    }
+
+    try {
+      const { error } = await supabase.auth.mfa.unenroll({ factorId });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      return { success: true, error: null };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Failed to disable MFA.' };
     }
   },
 
