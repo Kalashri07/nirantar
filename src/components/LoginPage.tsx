@@ -159,7 +159,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
                 placeholder="Enter your email"
                 className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl px-3.5 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
               />
@@ -184,7 +187,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup }) => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder="Enter your password"
                   className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
                 />

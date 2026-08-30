@@ -167,7 +167,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                 type="text"
                 required
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
                 placeholder="e.g. Rahul Sharma"
                 className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl px-3.5 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
               />
@@ -182,7 +185,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
                 placeholder="you@example.com"
                 className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl px-3.5 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
               />
@@ -198,7 +204,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder="At least 6 characters"
                   className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
                 />
@@ -222,7 +231,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder="Re-enter your password"
                   className="w-full bg-[#E9DDCB] border border-[#D8CABA] rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-[#102A43] placeholder-[#8C8275] focus:outline-none focus:border-[#102A43] transition-colors"
                 />
